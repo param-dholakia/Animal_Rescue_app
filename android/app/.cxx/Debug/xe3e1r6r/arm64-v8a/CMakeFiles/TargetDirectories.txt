@@ -1,0 +1,2 @@
+C:/Users/PARAM/Desktop/flutter 1/Animal_Rescue_app/android/app/.cxx/Debug/xe3e1r6r/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/PARAM/Desktop/flutter 1/Animal_Rescue_app/android/app/.cxx/Debug/xe3e1r6r/arm64-v8a/CMakeFiles/rebuild_cache.dir

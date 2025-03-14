@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
-// ignore: unused_import
-import 'package:google_api_headers/google_api_headers.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ReportPageWidget extends StatefulWidget {
   const ReportPageWidget({super.key});
@@ -20,12 +18,11 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
   File? _image;
   final TextEditingController _descriptionController = TextEditingController();
   String? _selectedCategory;
-  LatLng? _selectedLocation;
+  Position? _currentPosition;
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   final FlutterSoundPlayer _player = FlutterSoundPlayer();
   String? _audioPath;
   bool _isRecording = false;
-  static const String googleMapsApiKey = "YOUR_GOOGLE_MAPS_API_KEY"; // Replace with your API key
 
   @override
   void initState() {
@@ -53,6 +50,10 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
           _audioPath = path;
           _isRecording = false;
         });
+        
+        String fileName = '${DateTime.now().millisecondsSinceEpoch}.aac';
+        Reference ref = FirebaseStorage.instance.ref().child('audio/$fileName');
+        await ref.putFile(File(_audioPath!));
       } else {
         await _recorder.startRecorder(toFile: 'audio_record.aac');
         setState(() {
@@ -82,30 +83,75 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
       setState(() {
         _image = File(pickedFile.path);
       });
+
+      String fileName = '${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+      Reference ref = FirebaseStorage.instance.ref().child('images/$fileName');
+      await ref.putFile(_image!);
     }
   }
 
-  Future<void> _selectLocation(BuildContext context) async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlacePicker(
-          apiKey: googleMapsApiKey,
-          onPlacePicked: (result) {
-            setState(() {
-              _selectedLocation = LatLng(
-                  result.geometry!.location.lat, result.geometry!.location.lng);
-            });
-            Navigator.of(context).pop();
-          },
-          initialPosition: LatLng(position.latitude, position.longitude),
-          useCurrentLocation: true,
-        ),
-      ),
-    );
+  Future<void> _getLocation() async {
+    final permissionStatus = await Permission.location.request();
+    if (permissionStatus.isGranted) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        setState(() {
+          _currentPosition = position;
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to get location. Please try again.')),
+        );
+      }
+    }
+  }
+
+  Future<void> _submitReport() async {
+    try {
+      if (_image != null) {
+        String imageUrl = await _uploadFile(_image!, 'images');
+        
+        String? audioUrl;
+        if (_audioPath != null) {
+          audioUrl = await _uploadFile(File(_audioPath!), 'audio');
+        }
+
+        await FirebaseFirestore.instance.collection('reports').add({
+          'imageUrl': imageUrl,
+          'audioUrl': audioUrl,
+          'category': _selectedCategory,
+          'description': _descriptionController.text,
+          'location': _currentPosition != null
+              ? {'latitude': _currentPosition!.latitude, 'longitude': _currentPosition!.longitude}
+              : null,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Report submitted successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select an image before submitting.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting report: $e')),
+      );
+    }
+  }
+
+  Future<String> _uploadFile(File file, String folder) async {
+    try {
+      String fileName = '${DateTime.now().millisecondsSinceEpoch}';
+      Reference ref = FirebaseStorage.instance.ref().child('$folder/$fileName');
+      await ref.putFile(file);
+      return await ref.getDownloadURL();
+    } catch (e) {
+      throw Exception('File upload failed: $e');
+    }
   }
 
   @override
@@ -134,76 +180,16 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: _pickImage,
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(15),
-                    ),
                     child: const Icon(Icons.camera_alt),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _recordAudio,
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(15),
-                          backgroundColor: _isRecording ? Colors.red : null,
-                        ),
-                        child: const Icon(Icons.mic),
-                      ),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: _playAudio,
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(10),
-                        ),
-                        child: const Icon(Icons.play_arrow),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: _selectedCategory,
-              items: [
-                'Animal Abuse',
-                'Animal Accident',
-                'Animal Health Issue',
-                'Wild Animal',
-              ].map((category) {
-                return DropdownMenuItem(
-                  value: category,
-                  child: Text(category),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategory = value;
-                });
-              },
-              decoration: const InputDecoration(labelText: 'Select Category'),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () => _selectLocation(context),
-              icon: const Icon(Icons.map),
-              label: Text(_selectedLocation != null
-                  ? 'Location Selected: (${_selectedLocation!.latitude}, ${_selectedLocation!.longitude})'
-                  : 'Pick Location on Map'),
+            ElevatedButton(
+              onPressed: _submitReport,
+              child: const Text('Submit Report'),
             ),
           ],
         ),

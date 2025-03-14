@@ -15,6 +15,12 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+dependencyResolutionManagement {
+    repositories {
+        google()  // Make sure this is here
+        mavenCentral()  // Keep this too
+    }
+}
 
 plugins {
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
@@ -23,3 +29,4 @@ plugins {
 }
 
 include ":app"
+include ':firebase_analytics'
