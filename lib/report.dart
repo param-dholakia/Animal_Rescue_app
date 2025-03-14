@@ -50,10 +50,6 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
           _audioPath = path;
           _isRecording = false;
         });
-        
-        String fileName = '${DateTime.now().millisecondsSinceEpoch}.aac';
-        Reference ref = FirebaseStorage.instance.ref().child('audio/$fileName');
-        await ref.putFile(File(_audioPath!));
       } else {
         await _recorder.startRecorder(toFile: 'audio_record.aac');
         setState(() {
@@ -67,26 +63,13 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
     }
   }
 
-  Future<void> _playAudio() async {
-    if (_audioPath != null) {
-      await _player.startPlayer(fromURI: _audioPath!);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No audio recorded')),
-      );
-    }
-  }
-
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
       });
-
-      String fileName = '${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
-      Reference ref = FirebaseStorage.instance.ref().child('images/$fileName');
-      await ref.putFile(_image!);
     }
   }
 
@@ -101,7 +84,8 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to get location. Please try again.')),
+          const SnackBar(
+              content: Text('Failed to get location. Please try again.')),
         );
       }
     }
@@ -109,33 +93,34 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
 
   Future<void> _submitReport() async {
     try {
+      String? imageUrl;
+      String? audioUrl;
+
       if (_image != null) {
-        String imageUrl = await _uploadFile(_image!, 'images');
-        
-        String? audioUrl;
-        if (_audioPath != null) {
-          audioUrl = await _uploadFile(File(_audioPath!), 'audio');
-        }
-
-        await FirebaseFirestore.instance.collection('reports').add({
-          'imageUrl': imageUrl,
-          'audioUrl': audioUrl,
-          'category': _selectedCategory,
-          'description': _descriptionController.text,
-          'location': _currentPosition != null
-              ? {'latitude': _currentPosition!.latitude, 'longitude': _currentPosition!.longitude}
-              : null,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Report submitted successfully!')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select an image before submitting.')),
-        );
+        imageUrl = await _uploadFile(_image!, 'images');
       }
+
+      if (_audioPath != null) {
+        audioUrl = await _uploadFile(File(_audioPath!), 'audio');
+      }
+
+      await FirebaseFirestore.instance.collection('reports').add({
+        'imageUrl': imageUrl,
+        'audioUrl': audioUrl,
+        'category': _selectedCategory,
+        'description': _descriptionController.text,
+        'location': _currentPosition != null
+            ? {
+                'latitude': _currentPosition!.latitude,
+                'longitude': _currentPosition!.longitude
+              }
+            : null,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Report submitted successfully!')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error submitting report: $e')),
@@ -167,7 +152,7 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Center(
-              child: Text('Click a photo or record audio',
+              child: Text('Capture an image or record audio',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 10),
@@ -175,7 +160,8 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
               child: Column(
                 children: [
                   _image != null
-                      ? Image.file(_image!, height: 150, width: 150, fit: BoxFit.cover)
+                      ? Image.file(_image!,
+                          height: 150, width: 150, fit: BoxFit.cover)
                       : const Text('No image selected'),
                   const SizedBox(height: 10),
                   ElevatedButton(
@@ -183,8 +169,60 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
                     child: const Icon(Icons.camera_alt),
                   ),
                   const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _recordAudio,
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(15),
+                          backgroundColor: _isRecording ? Colors.red : null,
+                        ),
+                        child: const Icon(Icons.mic),
+                      ),
+                    ],
+                  ),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              items: [
+                'Animal Abuse',
+                'Animal Accident',
+                'Animal Health Issue',
+                'Wild Animal',
+              ].map((category) {
+                return DropdownMenuItem(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+              },
+              decoration: const InputDecoration(labelText: 'Select Category'),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _descriptionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _getLocation,
+              icon: const Icon(Icons.location_on),
+              label: Text(_currentPosition != null
+                  ? 'Location: (${_currentPosition!.latitude}, ${_currentPosition!.longitude})'
+                  : 'Share Location'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

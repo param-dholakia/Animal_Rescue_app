@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:firebase_core/firebase_core.dart'; // Import Firebase core
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'admin_login.dart';
 import 'report.dart';
 
@@ -66,10 +67,13 @@ class HomePageWidget extends StatelessWidget {
   }
 }
 
-// Add the main function here
+// Updated main function to initialize Firebase
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure binding is initialized
-  await Firebase.initializeApp(); // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(MaterialApp(
     home: HomePageWidget(),
     theme: ThemeData(

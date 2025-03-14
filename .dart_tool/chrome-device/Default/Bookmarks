@@ -1,0 +1,182 @@
+{
+   "checksum": "b80372419b12da7f69bf7eaf99eab791",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "children": [ {
+               "date_added": "13302943573517947",
+               "date_last_used": "0",
+               "guid": "d9372b64-7351-4459-a4df-81759d77e1e1",
+               "id": "13",
+               "name": "Lenovo Support",
+               "type": "url",
+               "url": "http://support.lenovo.com/"
+            }, {
+               "date_added": "13302943573533569",
+               "date_last_used": "0",
+               "guid": "69e6f52d-b254-4e29-b25d-4402fb961eef",
+               "id": "14",
+               "name": "Lenovo",
+               "type": "url",
+               "url": "http://www.lenovo.com/"
+            } ],
+            "date_added": "13386441924079881",
+            "date_last_used": "0",
+            "date_modified": "13386441927582729",
+            "guid": "4b851c48-f365-471a-b89b-41bba45690ad",
+            "id": "12",
+            "name": "Lenovo",
+            "type": "folder"
+         }, {
+            "date_added": "13302520547699432",
+            "date_last_used": "13380187985754344",
+            "guid": "a59d3ea8-4622-43ba-a935-bb0ecda7e16a",
+            "id": "15",
+            "name": "Gmail",
+            "type": "url",
+            "url": "https://accounts.google.com/b/0/AddMailService"
+         }, {
+            "date_added": "13302520547701566",
+            "date_last_used": "13376727599940768",
+            "guid": "1c6d9cbe-f52e-49e9-ac10-c142fca312cb",
+            "id": "16",
+            "name": "YouTube",
+            "type": "url",
+            "url": "https://youtube.com/"
+         }, {
+            "date_added": "13302520547703241",
+            "date_last_used": "0",
+            "guid": "4ff24ef2-cf1e-4bca-a437-8d5c961c3425",
+            "id": "17",
+            "name": "Maps",
+            "type": "url",
+            "url": "https://maps.google.com/"
+         }, {
+            "date_added": "13303761666884999",
+            "date_last_used": "0",
+            "guid": "a1de7f2f-c4a8-4519-be72-97b2427d061b",
+            "id": "18",
+            "name": "Log In - Typing.com",
+            "type": "url",
+            "url": "https://www.typing.com/student/login"
+         }, {
+            "date_added": "13303764133370803",
+            "date_last_used": "0",
+            "guid": "af338861-e54f-440f-ad89-9b9bf2494086",
+            "id": "19",
+            "name": "TypeRacer - Play Typing Games and Race Friends",
+            "type": "url",
+            "url": "https://play.typeracer.com/"
+         }, {
+            "date_added": "13306058285587489",
+            "date_last_used": "13335811958488771",
+            "guid": "21fb708e-4fcd-405c-a03f-4f065a0f656d",
+            "id": "20",
+            "name": "LinkedIn",
+            "type": "url",
+            "url": "https://www.linkedin.com/feed/"
+         }, {
+            "date_added": "13308938232418688",
+            "date_last_used": "0",
+            "guid": "783da603-e9cc-4298-864b-c7a52032669d",
+            "id": "21",
+            "name": "Gogoanime - Watch anime online, English anime online HD",
+            "type": "url",
+            "url": "https://www2.gogoanime.ee/"
+         }, {
+            "date_added": "13310672596214345",
+            "date_last_used": "0",
+            "guid": "b4ff1c13-6936-45d2-8e72-77e123141c20",
+            "id": "22",
+            "name": "ABC | Academic Bank of Credits",
+            "type": "url",
+            "url": "https://abc.digilocker.gov.in/nabc/studentdashboard"
+         }, {
+            "date_added": "13313861031688645",
+            "date_last_used": "0",
+            "guid": "c771fc64-b0a4-4b78-a485-fa6200c49c80",
+            "id": "23",
+            "name": "mysy",
+            "type": "url",
+            "url": "https://mysy.guj.nic.in/Frm_Stu_Login.aspx"
+         }, {
+            "children": [ {
+               "date_added": "13366359373291975",
+               "date_last_used": "0",
+               "guid": "0073ae51-30e5-4395-be1f-9a94ccd0f98a",
+               "id": "25",
+               "name": "Dell",
+               "type": "url",
+               "url": "http://www1.ap.dell.com/content/default.aspx?c=in&l=en&s=gen"
+            }, {
+               "date_added": "13366359373291975",
+               "date_last_used": "0",
+               "guid": "df7f5104-302a-43f1-94b5-085e567dc903",
+               "id": "26",
+               "name": "Support.Dell.Com",
+               "type": "url",
+               "url": "http://www.dell.com/support/home"
+            } ],
+            "date_added": "13366371403675441",
+            "date_last_used": "0",
+            "date_modified": "13366371403675441",
+            "guid": "443f3a73-c5c5-4b46-b074-dc856bb34537",
+            "id": "24",
+            "name": "Dell",
+            "type": "folder"
+         } ],
+         "date_added": "13386441919723686",
+         "date_last_used": "0",
+         "date_modified": "13313861031688645",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Bookmarks bar",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13386441919723696",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other bookmarks",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [ {
+            "date_added": "13232018199761659",
+            "date_last_used": "0",
+            "guid": "83826f52-a2ad-4987-a3c1-608a7ab657df",
+            "id": "9",
+            "name": "http://tiny.jio.com/DataBooster",
+            "type": "url",
+            "url": "http://tiny.jio.com/DataBooster"
+         }, {
+            "date_added": "13283540148027769",
+            "date_last_used": "0",
+            "guid": "7494db9f-ea7f-4d09-bd95-b20dea687fd7",
+            "id": "10",
+            "name": "Physics Wallah",
+            "type": "url",
+            "url": "https://www.physicswallah.live/tabs/tabs/dashboard-tab"
+         }, {
+            "date_added": "13302444444348637",
+            "date_last_used": "0",
+            "guid": "e6e7faae-f05b-45a0-a953-0a5ad03e7544",
+            "id": "11",
+            "name": "Welcome back PARAM",
+            "type": "url",
+            "url": "https://www.getlinks.info/love/"
+         } ],
+         "date_added": "13386441919723703",
+         "date_last_used": "0",
+         "date_modified": "13302444444348637",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile bookmarks",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}
