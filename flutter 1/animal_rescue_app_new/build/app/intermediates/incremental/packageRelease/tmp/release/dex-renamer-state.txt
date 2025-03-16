@@ -1,4 +1,0 @@
-#Sun Mar 16 17:50:21 IST 2025
-base.0=C\:\\Users\\PARAM\\Desktop\\flutter 1\\animal_rescue_app_new\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
