@@ -173,9 +173,9 @@
 -keep class androidx.lifecycle.DefaultLifecycleObserver
 
 # End of content from C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\flutter_plugin_android_lifecycle\intermediates\consumer_proguard_dir\release\exportReleaseConsumerProguardFiles\lib0\proguard.txt
-# The proguard configuration file for the following section is C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\proguard.txt
+# The proguard configuration file for the following section is C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\proguard.txt
 
-# End of content from C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\proguard.txt
+# End of content from C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\proguard.txt
 # The proguard configuration file for the following section is C:\Users\PARAM\.gradle\caches\8.10.2\transforms\1daaa8cb98affe9f103636955d34dce8\transformed\media-1.4.1\proguard.txt
 # Copyright (C) 2017 The Android Open Source Project
 #

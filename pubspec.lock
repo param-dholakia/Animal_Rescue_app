@@ -254,6 +254,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.1"
+  flutter_lints:
+    dependency: "direct dev"
+    description:
+      name: flutter_lints
+      sha256: "5398f14efa795ffb7a33e9b6a08798b26a180edac4ad7db3f231e40f82ce11e1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -274,26 +282,26 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_sound
-      sha256: e3a12461a3a9a91f945b6dbbfa88748f05434856bcad26a7c4bc7e51616b32cc
+      sha256: "8948391be95f0e121a9f781e1edf5f783f8d1f2f4cc3ce363b342374cde6665f"
       url: "https://pub.dev"
     source: hosted
-    version: "9.25.9"
+    version: "9.26.0"
   flutter_sound_platform_interface:
     dependency: transitive
     description:
       name: flutter_sound_platform_interface
-      sha256: d43d605c490b65a8692fe74db83dd39ddc02608e3100c29667da9155789b505f
+      sha256: e4d01beb992dcf37e5cff171053dca81c472dcc662421db4fa55ff43fe94703f
       url: "https://pub.dev"
     source: hosted
-    version: "9.25.9"
+    version: "9.26.0"
   flutter_sound_web:
     dependency: transitive
     description:
       name: flutter_sound_web
-      sha256: "4e96668229c0a4b1109776d0754a59107867ac741fdd55475a0447bf3c286930"
+      sha256: "7d3c98889e911184db72128284b5c6b114ea92f1a4bc2142d3301388ab42ed62"
       url: "https://pub.dev"
     source: hosted
-    version: "9.25.9"
+    version: "9.26.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -324,18 +332,18 @@ packages:
     dependency: transitive
     description:
       name: geolocator_android
-      sha256: "7aefc530db47d90d0580b552df3242440a10fe60814496a979aa67aa98b1fd47"
+      sha256: fcb1760a50d7500deca37c9a666785c047139b5f9ee15aa5469fae7dbbe3170d
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.1"
+    version: "4.6.2"
   geolocator_apple:
     dependency: transitive
     description:
       name: geolocator_apple
-      sha256: c4ecead17985ede9634f21500072edfcb3dba0ef7b97f8d7bc556d2d722b3ba3
+      sha256: "7c6c67ef6699243b29be15c00b4eabd3ab2f6b7b3d3663d5ebf1a5e6714b8a32"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.9"
+    version: "2.3.11"
   geolocator_platform_interface:
     dependency: transitive
     description:
@@ -356,10 +364,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_windows
-      sha256: "53da08937d07c24b0d9952eb57a3b474e29aae2abf9dd717f7e1230995f13f0e"
+      sha256: "4862e798b8a84ec300531888e7acd137b74637636069df230d79fabd110e2734"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.3"
+    version: "0.2.4"
   google_fonts:
     dependency: "direct main"
     description:
@@ -512,6 +520,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  lints:
+    dependency: transitive
+    description:
+      name: lints
+      sha256: c35bb79562d980e9a453fc715854e1ed39e24e7d0297a880ef54e17f9874a9d7
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.1"
   logger:
     dependency: transitive
     description:

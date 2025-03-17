@@ -403,10 +403,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="com.github.canardoux:flutter_sound_core:9.25.9@aar"
-      jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\jars\classes.jar"
-      resolved="com.github.canardoux:flutter_sound_core:9.25.9"
-      folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9"
+      name="com.github.canardoux:flutter_sound_core:9.26.0@aar"
+      jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\jars\classes.jar"
+      resolved="com.github.canardoux:flutter_sound_core:9.26.0"
+      folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"

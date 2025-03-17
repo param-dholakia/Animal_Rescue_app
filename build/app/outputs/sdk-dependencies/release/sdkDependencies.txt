@@ -1116,7 +1116,7 @@ library {
   maven_library {
     groupId: "com.github.canardoux"
     artifactId: "flutter_sound_core"
-    version: "9.25.9"
+    version: "9.26.0"
   }
   digests {
     sha256: "\254\340\250\311LQ\267\336z/0\035x,\036\"\327\265K\355\270\370\207\372\211\207:\321\322\333\2576"
@@ -1151,7 +1151,7 @@ library {
 }
 library {
   digests {
-    sha256: "\331\245\325\316u\000\266z\366\222q\023\222!\373\001\357\267E\246\003\001Cu\360\275q;\364\363\200w"
+    sha256: "*S=\fQ\374j\207\211\275\360\237\236L\364\277a\202\356\207Za2{\273\260g\302\310C\270a"
   }
 }
 library_dependencies {

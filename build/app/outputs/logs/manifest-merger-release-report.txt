@@ -14,8 +14,8 @@ MERGED from [:firebase_core] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_
 MERGED from [:firebase_core] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\firebase_core\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:7:5-13:19
 MERGED from [:image_picker_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\image_picker_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:8:5-32:19
 MERGED from [:image_picker_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\image_picker_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:8:5-32:19
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:13:5-14:19
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:13:5-14:19
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:13:5-14:19
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:13:5-14:19
 MERGED from [com.google.firebase:firebase-firestore:25.1.2] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:13:5-24:19
 MERGED from [com.google.firebase:firebase-firestore:25.1.2] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:13:5-24:19
 MERGED from [com.google.firebase:firebase-storage:21.0.1] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\7e096196208b422a996bcb1681c1fedb\transformed\jetified-firebase-storage-21.0.1\AndroidManifest.xml:26:5-37:19
@@ -74,7 +74,7 @@ MERGED from [:flutter_plugin_android_lifecycle] C:\Users\PARAM\Desktop\flutter 1
 MERGED from [:flutter_sound] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\flutter_sound\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:path_provider_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\path_provider_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:permission_handler_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\permission_handler_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:2:1-7:12
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:2:1-16:12
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:2:1-16:12
 MERGED from [androidx.media:media:1.4.1] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\1daaa8cb98affe9f103636955d34dce8\transformed\media-1.4.1\AndroidManifest.xml:17:1-30:12
 MERGED from [androidx.appcompat:appcompat:1.2.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\c1dc8e920fed363814fdd4872a592fc9\transformed\appcompat-1.2.0\AndroidManifest.xml:17:1-24:12
 MERGED from [com.google.firebase:firebase-firestore:25.1.2] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:2:1-26:12
@@ -141,8 +141,8 @@ ADDED from C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\android\app\sr
 		ADDED from C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\android\app\src\main\AndroidManifest.xml:4:22-78
 uses-permission#android.permission.RECORD_AUDIO
 ADDED from C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\android\app\src\main\AndroidManifest.xml:5:5-70
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:10:5-71
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:10:5-71
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:10:5-71
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:10:5-71
 	android:name
 		ADDED from C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\android\app\src\main\AndroidManifest.xml:5:22-68
 uses-permission#android.permission.CAMERA
@@ -235,8 +235,8 @@ MERGED from [:path_provider_android] C:\Users\PARAM\Desktop\flutter 1\animal_res
 MERGED from [:path_provider_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\path_provider_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:5:5-44
 MERGED from [:permission_handler_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\permission_handler_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:5:5-44
 MERGED from [:permission_handler_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\permission_handler_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:5:5-44
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:5:5-44
-MERGED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:5:5-44
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:5:5-44
+MERGED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.media:media:1.4.1] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\1daaa8cb98affe9f103636955d34dce8\transformed\media-1.4.1\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.media:media:1.4.1] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\1daaa8cb98affe9f103636955d34dce8\transformed\media-1.4.1\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat:1.2.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\c1dc8e920fed363814fdd4872a592fc9\transformed\appcompat-1.2.0\AndroidManifest.xml:20:5-22:41
@@ -428,21 +428,21 @@ ADDED from [:image_picker_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescu
 	android:name
 		ADDED from [:image_picker_android] C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\image_picker_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:29:17-63
 uses-permission#android.permission.BLUETOOTH
-ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:7:5-68
+ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:7:5-68
 	android:name
-		ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:7:22-65
+		ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:7:22-65
 uses-permission#android.permission.WAKE_LOCK
-ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:8:5-68
+ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:8:5-68
 	android:name
-		ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:8:22-65
+		ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:8:22-65
 uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
-ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:9:5-80
+ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:9:5-80
 	android:name
-		ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:9:22-77
+		ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:9:22-77
 uses-permission#Manifest.permission.CAPTURE_AUDIO_OUTPUT
-ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:11:5-80
+ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:11:5-80
 	android:name
-		ADDED from [com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:11:22-77
+		ADDED from [com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:11:22-77
 intent#action:name:android.media.browse.MediaBrowserService
 ADDED from [androidx.media:media:1.4.1] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\1daaa8cb98affe9f103636955d34dce8\transformed\media-1.4.1\AndroidManifest.xml:25:9-27:18
 action#android.media.browse.MediaBrowserService

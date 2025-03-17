@@ -66,7 +66,7 @@
   <library
       name=":@@:flutter_sound::release"
       jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\99cd600cff2682ab47bfd6be8a93723c\transformed\out\jars\classes.jar;C:\Users\PARAM\.gradle\caches\8.10.2\transforms\99cd600cff2682ab47bfd6be8a93723c\transformed\out\jars\libs\R.jar"
-      resolved="xyz.canardoux.fluttersound:flutter_sound:9.25.9"
+      resolved="xyz.canardoux.fluttersound:flutter_sound:9.26.0"
       partialResultsDir="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\flutter_sound\intermediates\lint_vital_partial_results\release\lintVitalAnalyzeRelease\out"
       folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\99cd600cff2682ab47bfd6be8a93723c\transformed\out"
       manifest="AndroidManifest.xml"
@@ -79,10 +79,10 @@
       proguardRules="proguard.txt"/>
   <library
       name=":@@:geolocator_android::release"
-      jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\ad1b6ef32db40072c8c4fa9733d5d968\transformed\out\jars\classes.jar;C:\Users\PARAM\.gradle\caches\8.10.2\transforms\ad1b6ef32db40072c8c4fa9733d5d968\transformed\out\jars\libs\R.jar"
+      jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\7d55e425d2625b7c2894e0a72d008304\transformed\out\jars\classes.jar;C:\Users\PARAM\.gradle\caches\8.10.2\transforms\7d55e425d2625b7c2894e0a72d008304\transformed\out\jars\libs\R.jar"
       resolved="com.baseflow.geolocator:geolocator_android:1.0"
       partialResultsDir="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\geolocator_android\intermediates\lint_vital_partial_results\release\lintVitalAnalyzeRelease\out"
-      folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\ad1b6ef32db40072c8c4fa9733d5d968\transformed\out"
+      folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\7d55e425d2625b7c2894e0a72d008304\transformed\out"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -502,10 +502,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="com.github.canardoux:flutter_sound_core:9.25.9@aar"
-      jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\jars\classes.jar"
-      resolved="com.github.canardoux:flutter_sound_core:9.25.9"
-      folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9"
+      name="com.github.canardoux:flutter_sound_core:9.26.0@aar"
+      jars="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\jars\classes.jar"
+      resolved="com.github.canardoux:flutter_sound_core:9.26.0"
+      folder="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"

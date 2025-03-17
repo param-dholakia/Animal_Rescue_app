@@ -46,17 +46,17 @@
 27    </queries>
 28
 29    <uses-permission android:name="android.permission.BLUETOOTH" />
-29-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:7:5-68
-29-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:7:22-65
+29-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:7:5-68
+29-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:7:22-65
 30    <uses-permission android:name="android.permission.WAKE_LOCK" />
-30-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:8:5-68
-30-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:8:22-65
+30-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:8:5-68
+30-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:8:22-65
 31    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-31-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:9:5-80
-31-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:9:22-77
+31-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:9:5-80
+31-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:9:22-77
 32    <uses-permission android:name="Manifest.permission.CAPTURE_AUDIO_OUTPUT" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
-32-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:11:5-80
-32-->[com.github.canardoux:flutter_sound_core:9.25.9] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\9400f5d4dc1b3f5a187379ad2274d797\transformed\jetified-flutter_sound_core-9.25.9\AndroidManifest.xml:11:22-77
+32-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:11:5-80
+32-->[com.github.canardoux:flutter_sound_core:9.26.0] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\11c114c122f732157519447025593a78\transformed\jetified-flutter_sound_core-9.26.0\AndroidManifest.xml:11:22-77
 33    <!-- <uses-sdk android:minSdkVersion="21" /> -->
 34    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 34-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\PARAM\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:10:5-79

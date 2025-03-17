@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -42,7 +41,7 @@ class GoogleDriveService {
 
   Future<void> authenticateWithGoogleDrive() async {
     final credentials =
-        await rootBundle.loadString('assets/pawsaviour1-53ab1a497634.json');
+        await rootBundle.loadString('assets/pawsaviour1-736680debc9a.json');
     final serviceAccount =
         auth.ServiceAccountCredentials.fromJson(jsonDecode(credentials));
 

@@ -1,8 +1,8 @@
 <variant
     name="release"
     package="com.baseflow.geolocator"
-    minSdkVersion="16"
-    targetSdkVersion="16"
+    minSdkVersion="21"
+    targetSdkVersion="21"
     mergedManifest="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\geolocator_android\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml"
     manifestMergeReport="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\geolocator_android\outputs\logs\manifest-merger-release-report.txt"
     proguardFiles="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\geolocator_android\intermediates\default_proguard_files\global\proguard-android.txt-8.7.0"
@@ -26,6 +26,6 @@
       applicationId="com.baseflow.geolocator"
       generatedSourceFolders="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\geolocator_android\generated\ap_generated_sources\release\out"
       generatedResourceFolders="C:\Users\PARAM\Desktop\flutter 1\animal_rescue_app_new\build\geolocator_android\generated\res\resValues\release"
-      desugaredMethodsFiles="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\80c098f166ada488cdaa896763b1a83b\transformed\D8BackportedDesugaredMethods.txt">
+      desugaredMethodsFiles="C:\Users\PARAM\.gradle\caches\8.10.2\transforms\43efc08548039a3e1602a330a74cfb74\transformed\D8BackportedDesugaredMethods.txt">
   </artifact>
 </variant>

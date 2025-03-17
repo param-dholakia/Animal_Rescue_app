@@ -194,6 +194,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "flutter_lints",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
       "name": "flutter_plugin_android_lifecycle",
       "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.27",
       "packageUri": "lib/",
@@ -207,19 +213,19 @@
     },
     {
       "name": "flutter_sound",
-      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_sound-9.25.9",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_sound-9.26.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
     {
       "name": "flutter_sound_platform_interface",
-      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_sound_platform_interface-9.25.9",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_sound_platform_interface-9.26.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
     {
       "name": "flutter_sound_web",
-      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_sound_web-9.25.9",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_sound_web-9.26.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -249,15 +255,15 @@
     },
     {
       "name": "geolocator_android",
-      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_android-4.6.1",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_android-4.6.2",
       "packageUri": "lib/",
-      "languageVersion": "2.15"
+      "languageVersion": "3.5"
     },
     {
       "name": "geolocator_apple",
-      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.9",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.11",
       "packageUri": "lib/",
-      "languageVersion": "2.15"
+      "languageVersion": "3.5"
     },
     {
       "name": "geolocator_platform_interface",
@@ -273,9 +279,9 @@
     },
     {
       "name": "geolocator_windows",
-      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_windows-0.2.3",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_windows-0.2.4",
       "packageUri": "lib/",
-      "languageVersion": "2.15"
+      "languageVersion": "3.5"
     },
     {
       "name": "google_fonts",
@@ -390,6 +396,12 @@
       "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_testing-3.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
+    },
+    {
+      "name": "lints",
+      "rootUri": "file:///C:/Users/PARAM/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
     },
     {
       "name": "logger",
@@ -632,7 +644,7 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-03-16T12:18:23.652871Z",
+  "generated": "2025-03-17T13:54:13.578375Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/flutter",
