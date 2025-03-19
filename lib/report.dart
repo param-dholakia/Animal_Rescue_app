@@ -88,6 +88,23 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
     });
   }
 
+  /// 🔥 Fetches the latest case ID from Firestore and generates the next case ID
+  Future<String> _getNextCaseId() async {
+    var reports = await FirebaseFirestore.instance
+        .collection('reports')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
+
+    if (reports.docs.isEmpty) {
+      return 'case-1';
+    } else {
+      String lastCaseId = reports.docs.first.id;
+      int caseNumber = int.parse(lastCaseId.split('-')[1]);
+      return 'case-${caseNumber + 1}';
+    }
+  }
+
   Future<void> _submitReport() async {
     try {
       if (_image == null && _audioPath == null) {
@@ -96,11 +113,13 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
         return;
       }
 
-      String caseId = DateTime.now().millisecondsSinceEpoch.toString();
-      String caseFolderName = 'case-$caseId';
+      // Get the next case ID
+      String caseId = await _getNextCaseId();
       GoogleDriveService googleDriveService = GoogleDriveService();
+      
+      // Create folder in Google Drive with the same case ID
       String? folderId =
-          await googleDriveService.createCaseFolder(caseFolderName);
+          await googleDriveService.createCaseFolder(caseId);
 
       if (folderId == null) {
         _showSnackBar('Failed to create folder on Google Drive.', Colors.red);
@@ -118,7 +137,11 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
             File(_audioPath!), folderId);
       }
 
-      await FirebaseFirestore.instance.collection('reports').add({
+      // Save the report with the case ID as the document ID
+      await FirebaseFirestore.instance
+          .collection('reports')
+          .doc(caseId)
+          .set({
         'caseId': caseId,
         'folderUrl': "https://drive.google.com/drive/folders/$folderId",
         'imageUrl': imageUrl,
@@ -231,13 +254,9 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
                 decoration: const InputDecoration(
                     labelText: 'Description', border: OutlineInputBorder()),
               ),
-              ElevatedButton.icon(
-                onPressed: _getLocation,
-                icon: const Icon(Icons.location_on),
-                label: Text(_currentPosition != null
-                    ? 'Location: (${_currentPosition!.latitude}, ${_currentPosition!.longitude})'
-                    : 'Share Location'),
-              ),
+              ElevatedButton(
+                  onPressed: _getLocation, 
+                  child: const Text('Share Location')),
               ElevatedButton(
                   onPressed: _submitReport, child: const Text('Submit Report')),
             ],
