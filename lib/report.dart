@@ -7,6 +7,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'google_drive_service.dart';
 
+final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 class ReportPageWidget extends StatefulWidget {
   const ReportPageWidget({super.key});
 
@@ -58,7 +61,7 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
         });
       }
     } else {
-      _showSnackBar('Microphone permission required');
+      _showSnackBar('Microphone permission required', Colors.red);
     }
   }
 
@@ -75,7 +78,7 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
   Future<void> _getLocation() async {
     var status = await Permission.location.request();
     if (!status.isGranted) {
-      _showSnackBar('Location permission required');
+      _showSnackBar('Location permission required', Colors.red);
       return;
     }
     Position position = await Geolocator.getCurrentPosition(
@@ -88,26 +91,31 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
   Future<void> _submitReport() async {
     try {
       if (_image == null && _audioPath == null) {
-        _showSnackBar('Please capture an image or record an audio.');
+        _showSnackBar(
+            'Please capture an image or record an audio.', Colors.red);
         return;
       }
 
       String caseId = DateTime.now().millisecondsSinceEpoch.toString();
       String caseFolderName = 'case-$caseId';
       GoogleDriveService googleDriveService = GoogleDriveService();
-      String? folderId = await googleDriveService.createCaseFolder(caseFolderName);
+      String? folderId =
+          await googleDriveService.createCaseFolder(caseFolderName);
+
       if (folderId == null) {
-        _showSnackBar('Failed to create folder on Google Drive.');
+        _showSnackBar('Failed to create folder on Google Drive.', Colors.red);
         return;
       }
 
       String? imageUrl;
       String? audioUrl;
       if (_image != null) {
-        imageUrl = await googleDriveService.uploadFileToCaseFolder(_image!, folderId);
+        imageUrl =
+            await googleDriveService.uploadFileToCaseFolder(_image!, folderId);
       }
       if (_audioPath != null) {
-        audioUrl = await googleDriveService.uploadFileToCaseFolder(File(_audioPath!), folderId);
+        audioUrl = await googleDriveService.uploadFileToCaseFolder(
+            File(_audioPath!), folderId);
       }
 
       await FirebaseFirestore.instance.collection('reports').add({
@@ -118,82 +126,122 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
         'category': _selectedCategory,
         'description': _descriptionController.text,
         'location': _currentPosition != null
-            ? {'latitude': _currentPosition!.latitude, 'longitude': _currentPosition!.longitude}
+            ? {
+                'latitude': _currentPosition!.latitude,
+                'longitude': _currentPosition!.longitude
+              }
             : null,
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      _showSnackBar('Report submitted successfully!');
+      // Refresh the page after successful submission
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text('Report Submitted successfully!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Reset the form and refresh the page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ReportPageWidget()),
+      );
     } catch (e) {
-      _showSnackBar('Error submitting report: $e');
+      _showSnackBar('Error submitting report: $e', Colors.red);
     }
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  void _showSnackBar(String message, Color color) {
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Report an Incident')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  _image != null
-                      ? Image.file(_image!, height: 150, width: 150, fit: BoxFit.cover)
-                      : const Text('No image selected'),
-                  ElevatedButton(onPressed: _pickImage, child: const Icon(Icons.camera_alt)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _recordAudio,
-                        child: const Icon(Icons.mic),
-                      ),
-                      if (_audioPath != null)
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerKey,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Report an Incident')),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Column(
+                  children: [
+                    _image != null
+                        ? Image.file(_image!,
+                            height: 150, width: 150, fit: BoxFit.cover)
+                        : const Text('No image selected'),
+                    ElevatedButton(
+                        onPressed: _pickImage,
+                        child: const Icon(Icons.camera_alt)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         ElevatedButton(
-                          onPressed: () async {
-                            await _player.startPlayer(fromURI: _audioPath);
-                          },
-                          child: const Icon(Icons.play_arrow),
+                          onPressed: _recordAudio,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                _isRecording ? Colors.red : Colors.yellow,
+                          ),
+                          child: const Icon(Icons.mic),
                         ),
-                    ],
-                  ),
-                ],
+                        if (_audioPath != null)
+                          ElevatedButton(
+                            onPressed: () async {
+                              await _player.startPlayer(fromURI: _audioPath);
+                            },
+                            child: const Icon(Icons.play_arrow),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            DropdownButtonFormField<String>(
-              value: _selectedCategory,
-              items: ['Animal Abuse', 'Animal Accident', 'Animal Health Issue', 'Wild Animal']
-                  .map((category) => DropdownMenuItem(value: category, child: Text(category)))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategory = value;
-                });
-              },
-              decoration: const InputDecoration(labelText: 'Select Category'),
-            ),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 3,
-              decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
-            ),
-            ElevatedButton.icon(
-              onPressed: _getLocation,
-              icon: const Icon(Icons.location_on),
-              label: Text(_currentPosition != null
-                  ? 'Location: (${_currentPosition!.latitude}, ${_currentPosition!.longitude})'
-                  : 'Share Location'),
-            ),
-            ElevatedButton(onPressed: _submitReport, child: const Text('Submit Report')),
-          ],
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                items: [
+                  'Animal Abuse',
+                  'Animal Accident',
+                  'Animal Health Issue',
+                  'Wild Animal'
+                ]
+                    .map((category) => DropdownMenuItem(
+                        value: category, child: Text(category)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategory = value;
+                  });
+                },
+                decoration: const InputDecoration(labelText: 'Select Category'),
+              ),
+              TextField(
+                controller: _descriptionController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                    labelText: 'Description', border: OutlineInputBorder()),
+              ),
+              ElevatedButton.icon(
+                onPressed: _getLocation,
+                icon: const Icon(Icons.location_on),
+                label: Text(_currentPosition != null
+                    ? 'Location: (${_currentPosition!.latitude}, ${_currentPosition!.longitude})'
+                    : 'Share Location'),
+              ),
+              ElevatedButton(
+                  onPressed: _submitReport, child: const Text('Submit Report')),
+            ],
+          ),
         ),
       ),
     );

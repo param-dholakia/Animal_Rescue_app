@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'admin_dashboard.dart';
-import 'admin_register.dart';
 
 class AdminLoginWidget extends StatefulWidget {
   const AdminLoginWidget({super.key});
@@ -88,13 +87,6 @@ class _AdminLoginWidgetState extends State<AdminLoginWidget> {
             ElevatedButton(
               onPressed: loginAdmin,
               child: const Text('Login'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AdminRegisterWidget()),
-              ),
-              child: const Text('Register as Admin'),
             ),
           ],
         ),

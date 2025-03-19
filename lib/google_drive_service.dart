@@ -41,7 +41,7 @@ class GoogleDriveService {
 
   Future<void> authenticateWithGoogleDrive() async {
     final credentials =
-        await rootBundle.loadString('assets/pawsaviour1-736680debc9a.json');
+        await rootBundle.loadString('assets/pawsaviour1-3d9dc18813a5.json');
     final serviceAccount =
         auth.ServiceAccountCredentials.fromJson(jsonDecode(credentials));
 
