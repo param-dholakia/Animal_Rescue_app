@@ -105,76 +105,70 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
     }
   }
 
-  Future<void> _submitReport() async {
-    try {
-      if (_image == null && _audioPath == null) {
-        _showSnackBar(
-            'Please capture an image or record an audio.', Colors.red);
-        return;
-      }
-
-      // Get the next case ID
-      String caseId = await _getNextCaseId();
-      GoogleDriveService googleDriveService = GoogleDriveService();
-      
-      // Create folder in Google Drive with the same case ID
-      String? folderId =
-          await googleDriveService.createCaseFolder(caseId);
-
-      if (folderId == null) {
-        _showSnackBar('Failed to create folder on Google Drive.', Colors.red);
-        return;
-      }
-
-      String? imageUrl;
-      String? audioUrl;
-      if (_image != null) {
-        imageUrl =
-            await googleDriveService.uploadFileToCaseFolder(_image!, folderId);
-      }
-      if (_audioPath != null) {
-        audioUrl = await googleDriveService.uploadFileToCaseFolder(
-            File(_audioPath!), folderId);
-      }
-
-      // Save the report with the case ID as the document ID
-      await FirebaseFirestore.instance
-          .collection('reports')
-          .doc(caseId)
-          .set({
-        'caseId': caseId,
-        'folderUrl': "https://drive.google.com/drive/folders/$folderId",
-        'imageUrl': imageUrl,
-        'audioUrl': audioUrl,
-        'category': _selectedCategory,
-        'description': _descriptionController.text,
-        'location': _currentPosition != null
-            ? {
-                'latitude': _currentPosition!.latitude,
-                'longitude': _currentPosition!.longitude
-              }
-            : null,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      // Refresh the page after successful submission
-      _scaffoldMessengerKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Report Submitted successfully!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      // Reset the form and refresh the page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ReportPageWidget()),
-      );
-    } catch (e) {
-      _showSnackBar('Error submitting report: $e', Colors.red);
+ Future<void> _submitReport() async {
+  try {
+    if (_image == null && _audioPath == null) {
+      _showSnackBar('Please capture an image or record an audio.', Colors.red);
+      return;
     }
+
+    // Get the next case ID
+    String caseId = await _getNextCaseId();
+    GoogleDriveService googleDriveService = GoogleDriveService();
+    
+    // Create folder in Google Drive with the same case ID
+    String? folderId = await googleDriveService.createCaseFolder(caseId);
+
+    if (folderId == null) {
+      _showSnackBar('Failed to create folder on Google Drive.', Colors.red);
+      return;
+    }
+
+    String? imageUrl;
+    String? audioUrl;
+    if (_image != null) {
+      imageUrl = await googleDriveService.uploadFileToCaseFolder(_image!, folderId);
+    }
+    if (_audioPath != null) {
+      audioUrl = await googleDriveService.uploadFileToCaseFolder(File(_audioPath!), folderId);
+    }
+
+    // Save the report with the case ID as the document ID
+    await FirebaseFirestore.instance.collection('reports').doc(caseId).set({
+      'caseId': caseId,
+      'folderUrl': "https://drive.google.com/drive/folders/$folderId",
+      'imageUrl': imageUrl,
+      'audioUrl': audioUrl,
+      'category': _selectedCategory,
+      'description': _descriptionController.text,
+      'location': _currentPosition != null
+          ? {
+              'latitude': _currentPosition!.latitude,
+              'longitude': _currentPosition!.longitude,
+            }
+          : null,
+      'timestamp': FieldValue.serverTimestamp(),
+      'status': 'Unsolved', // Add default status
+    });
+
+    // Refresh the page after successful submission
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      const SnackBar(
+        content: Text('Report Submitted successfully!'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    // Reset the form and refresh the page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const ReportPageWidget()),
+    );
+  } catch (e) {
+    _showSnackBar('Error submitting report: $e', Colors.red);
   }
+}
 
   void _showSnackBar(String message, Color color) {
     _scaffoldMessengerKey.currentState?.showSnackBar(
