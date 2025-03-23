@@ -36,7 +36,7 @@ class _AdminLoginWidgetState extends State<AdminLoginWidget> {
       showMessage("Login Successful", success: true);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const AdminDashboard()),
+        MaterialPageRoute(builder: (context) => const AdminDashboardPage()),
       );
     } else {
       showMessage("Invalid credentials");

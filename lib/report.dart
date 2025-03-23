@@ -254,9 +254,13 @@ class _ReportPageWidgetState extends State<ReportPageWidget> {
                 decoration: const InputDecoration(
                     labelText: 'Description', border: OutlineInputBorder()),
               ),
-              ElevatedButton(
-                  onPressed: _getLocation, 
-                  child: const Text('Share Location')),
+              ElevatedButton.icon(
+                onPressed: _getLocation,
+                icon: const Icon(Icons.location_on),
+                label: Text(_currentPosition != null
+                    ? 'Location: (${_currentPosition!.latitude}, ${_currentPosition!.longitude})'
+                    : 'Share Location'),
+              ),
               ElevatedButton(
                   onPressed: _submitReport, child: const Text('Submit Report')),
             ],
