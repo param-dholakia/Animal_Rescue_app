@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const PawSaviorAdminDashboard());
@@ -36,7 +37,7 @@ class AdminDashboardPageState extends State<AdminDashboardPage> {
   final List<Widget> _pages = [
     const ReportManagementPage(),
     const AnalyticsPage(),
-    const ContentManagementPage(),
+    const NGORegistriesPage(),
     const PushNotificationPage(),
   ];
 
@@ -58,7 +59,7 @@ class AdminDashboardPageState extends State<AdminDashboardPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Reports'),
           BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Content Mgmt'),
+          BottomNavigationBarItem(icon: Icon(Icons.group), label: 'NGO Registries'),
           BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
         ],
         currentIndex: _selectedIndex,
@@ -82,10 +83,10 @@ class ReportManagementPage extends StatefulWidget {
 
 class _ReportManagementPageState extends State<ReportManagementPage> {
   final CollectionReference reportsCollection = FirebaseFirestore.instance.collection('reports');
-  String _statusFilter = 'All'; // Filter for status: "All", "Unsolved", "Solved"
+  String _statusFilter = 'All';
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
-  bool _isLoadingAudio = false; // Track audio loading state
+  bool _isLoadingAudio = false;
 
   @override
   void dispose() {
@@ -231,11 +232,21 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
     );
   }
 
+  Future<void> _viewInDrive(String folderUrl) async {
+    final Uri uri = Uri.parse(folderUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the Google Drive folder')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Status Filter Dropdown
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: DropdownButton<String>(
@@ -253,7 +264,6 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
             },
           ),
         ),
-        // Report List
         Expanded(
           child: StreamBuilder(
             stream: reportsCollection.orderBy('timestamp', descending: true).snapshots(),
@@ -341,12 +351,17 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                                     ),
                                     IconButton(
                                       icon: Icon(
-                                        Icons.remove_red_eye,
+                                        Icons.audiotrack,
                                         color: hasAudio ? Colors.blue : Colors.grey,
                                       ),
                                       onPressed: hasAudio ? () => _playAudio(data['audioUrl']) : null,
                                       tooltip: 'Play Audio',
                                     ),
+                                    if (data['folderUrl'] != null)
+                                      TextButton(
+                                        onPressed: () => _viewInDrive(data['folderUrl']),
+                                        child: const Text('View in Drive'),
+                                      ),
                                   ],
                                 ),
                               ],
@@ -432,16 +447,109 @@ class AnalyticsPage extends StatelessWidget {
   }
 }
 
-class ContentManagementPage extends StatelessWidget {
-  const ContentManagementPage({super.key});
+class NGORegistriesPage extends StatefulWidget {
+  const NGORegistriesPage({super.key});
+
+  @override
+  State<NGORegistriesPage> createState() => _NGORegistriesPageState();
+}
+
+class _NGORegistriesPageState extends State<NGORegistriesPage> {
+  final CollectionReference ngoCollection = FirebaseFirestore.instance.collection('ngo_registrations');
+
+  void _updateNGOStatus(String docId, String currentStatus, String newStatus) async {
+    try {
+      await ngoCollection.doc(docId).update({'status': newStatus});
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('NGO status updated to $newStatus')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating NGO status: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Content Management Page',
-        style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
-      ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'NGO Registries',
+            style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: StreamBuilder(
+            stream: ngoCollection.orderBy('timestamp', descending: true).snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final ngos = snapshot.data!.docs;
+              if (ngos.isEmpty) {
+                return const Center(child: Text('No NGO registrations available'));
+              }
+              return ListView.builder(
+                itemCount: ngos.length,
+                itemBuilder: (context, index) {
+                  final ngo = ngos[index];
+                  final data = ngo.data() as Map<String, dynamic>;
+                  final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
+                  final formattedTimestamp = timestamp != null
+                      ? DateFormat('MMM dd, yyyy - HH:mm').format(timestamp)
+                      : 'N/A';
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(
+                          data['name'] ?? 'N/A',
+                          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Email: ${data['email'] ?? 'N/A'}'),
+                            Text('Contact: ${data['contact'] ?? 'N/A'}'),
+                            Text('Address: ${data['address'] ?? 'N/A'}'),
+                            Text('Description: ${data['description'] ?? 'N/A'}'),
+                            Text('Status: ${data['status'] ?? 'Pending'}'),
+                            Text('Submitted: $formattedTimestamp', style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[500])),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (data['status'] == 'Pending')
+                              IconButton(
+                                icon: const Icon(Icons.check, color: Colors.green),
+                                onPressed: () => _updateNGOStatus(ngo.id, data['status'], 'Approved'),
+                                tooltip: 'Approve',
+                              ),
+                            if (data['status'] == 'Pending')
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.red),
+                                onPressed: () => _updateNGOStatus(ngo.id, data['status'], 'Rejected'),
+                                tooltip: 'Reject',
+                              ),
+                            if (data['status'] != 'Pending')
+                              IconButton(
+                                icon: const Icon(Icons.undo, color: Colors.blue),
+                                onPressed: () => _updateNGOStatus(ngo.id, data['status'], 'Pending'),
+                                tooltip: 'Reset to Pending',
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
