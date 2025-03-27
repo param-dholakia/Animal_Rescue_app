@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'admin_login.dart';
+import 'login.dart'; // Import the updated login.dart file
 import 'report.dart';
-import 'google_drive_service.dart'; // Added Google Drive service import
+import 'google_drive_service.dart';
+import 'register.dart'; // Import the new register.dart file
 
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
@@ -13,7 +14,7 @@ class HomePageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Paw Saviour', style: TextStyle(color: Colors.white)),
+        title: const Text('Paw Saviour', style: TextStyle(color: Colors.white)),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       drawer: Drawer(
@@ -22,14 +23,22 @@ class HomePageWidget extends StatelessWidget {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-              child: Text("Menu", style: TextStyle(color: Colors.white)),
+              child: const Text("Menu", style: TextStyle(color: Colors.white)),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Login'),
+              leading: const Icon(Icons.person),
+              title: const Text('Login'),
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AdminLoginWidget()),
+                MaterialPageRoute(builder: (context) => const LoginPage()), // Updated to LoginPage
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person_add), // Icon for registration
+              title: const Text('Register'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPageWidget()),
               ),
             ),
           ],
@@ -39,23 +48,23 @@ class HomePageWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "Report Here",
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
-            Text("(click below red button to report)"),
-            SizedBox(height: 20),
+            const Text("(click below red button to report)"),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                padding: EdgeInsets.all(20),
-                shape: CircleBorder(),
+                padding: const EdgeInsets.all(20),
+                shape: const CircleBorder(),
               ),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ReportPageWidget()), // Ensure ReportPageWidget exists
+                MaterialPageRoute(builder: (context) => const ReportPageWidget()),
               ),
-              child: Icon(
+              child: const Icon(
                 FontAwesomeIcons.paw,
                 color: Colors.white,
                 size: 30,
@@ -68,10 +77,9 @@ class HomePageWidget extends StatelessWidget {
   }
 }
 
-// Updated main function to initialize Firebase and authenticate Google Drive
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -83,16 +91,17 @@ void main() async {
 
   final driveService = GoogleDriveService();
   try {
-    await driveService.authenticateWithGoogleDrive(); // Authenticate Google Drive
+    await driveService.authenticateWithGoogleDrive();
     print("✅ Google Drive authenticated successfully");
   } catch (e) {
     print("❌ Google Drive authentication failed: $e");
   }
 
   runApp(MaterialApp(
-    home: HomePageWidget(),
+    home: const HomePageWidget(),
     theme: ThemeData(
-      primaryColor: Colors.blue, // Set your primary color here
+      primaryColor: Colors.blue,
+      useMaterial3: true, // Added for consistency with LoginPage
     ),
   ));
 }

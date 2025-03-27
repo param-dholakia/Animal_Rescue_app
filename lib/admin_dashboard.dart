@@ -1,4 +1,3 @@
-// admin_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'ngo_approval_service.dart'; 
 
 void main() {
   runApp(const PawSaviorAdminDashboard());
@@ -447,6 +447,8 @@ class AnalyticsPage extends StatelessWidget {
   }
 }
 
+
+
 class NGORegistriesPage extends StatefulWidget {
   const NGORegistriesPage({super.key});
 
@@ -455,14 +457,32 @@ class NGORegistriesPage extends StatefulWidget {
 }
 
 class _NGORegistriesPageState extends State<NGORegistriesPage> {
-  final CollectionReference ngoCollection = FirebaseFirestore.instance.collection('ngo_registrations');
+  final CollectionReference ngoCollection = FirebaseFirestore.instance.collection('registration-queries');
+  final NGOApprovalService _approvalService = NGOApprovalService();
 
-  void _updateNGOStatus(String docId, String currentStatus, String newStatus) async {
+  void _rejectNGO(String docId) async {
     try {
-      await ngoCollection.doc(docId).update({'status': newStatus});
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('NGO status updated to $newStatus')));
+      await ngoCollection.doc(docId).delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('NGO registration rejected and removed')),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating NGO status: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error rejecting NGO: $e')),
+      );
+    }
+  }
+
+  void _acceptNGO(String docId, Map<String, dynamic> ngoData) async {
+    try {
+      String result = await _approvalService.approveNGO(docId, ngoData);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error approving NGO: $e')),
+      );
     }
   }
 
@@ -503,41 +523,66 @@ class _NGORegistriesPageState extends State<NGORegistriesPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
-                        title: Text(
-                          data['name'] ?? 'N/A',
-                          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Email: ${data['email'] ?? 'N/A'}'),
-                            Text('Contact: ${data['contact'] ?? 'N/A'}'),
-                            Text('Address: ${data['address'] ?? 'N/A'}'),
-                            Text('Description: ${data['description'] ?? 'N/A'}'),
-                            Text('Status: ${data['status'] ?? 'Pending'}'),
-                            Text('Submitted: $formattedTimestamp', style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[500])),
+                            Text(
+                              data['ngoName'] ?? 'N/A',
+                              style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600),
+                            ),
+                            Text(
+                              data['status'] ?? 'Pending',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: data['status'] == 'pending'
+                                    ? Colors.orange
+                                    : data['status'] == 'approved'
+                                        ? Colors.green
+                                        : Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
+                        ),
+                        subtitle: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height * 0.3,
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Registration Number: ${data['registrationNumber'] ?? 'N/A'}'),
+                                Text('Contact Person: ${data['contactPerson'] ?? 'N/A'}'),
+                                Text('Email: ${data['email'] ?? 'N/A'}'),
+                                Text('Phone: ${data['phone'] ?? 'N/A'}'),
+                                Text('Address: ${data['address'] ?? 'N/A'}'),
+                                Text('Area of Operation: ${data['areaOfOperation'] ?? 'N/A'}'),
+                                Text('Services Offered: ${data['servicesOffered'] ?? 'N/A'}'),
+                                Text('Website: ${data['website'] ?? 'N/A'}'),
+                                Text('Description: ${data['description'] ?? 'N/A'}'),
+                                Text(
+                                  'Submitted: $formattedTimestamp',
+                                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[500]),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (data['status'] == 'Pending')
+                            if (data['status'] == 'pending')
                               IconButton(
                                 icon: const Icon(Icons.check, color: Colors.green),
-                                onPressed: () => _updateNGOStatus(ngo.id, data['status'], 'Approved'),
-                                tooltip: 'Approve',
+                                onPressed: () => _acceptNGO(ngo.id, data),
+                                tooltip: 'Accept',
                               ),
-                            if (data['status'] == 'Pending')
+                            if (data['status'] == 'pending')
                               IconButton(
                                 icon: const Icon(Icons.close, color: Colors.red),
-                                onPressed: () => _updateNGOStatus(ngo.id, data['status'], 'Rejected'),
+                                onPressed: () => _rejectNGO(ngo.id),
                                 tooltip: 'Reject',
-                              ),
-                            if (data['status'] != 'Pending')
-                              IconButton(
-                                icon: const Icon(Icons.undo, color: Colors.blue),
-                                onPressed: () => _updateNGOStatus(ngo.id, data['status'], 'Pending'),
-                                tooltip: 'Reset to Pending',
                               ),
                           ],
                         ),
@@ -553,7 +598,6 @@ class _NGORegistriesPageState extends State<NGORegistriesPage> {
     );
   }
 }
-
 class PushNotificationPage extends StatelessWidget {
   const PushNotificationPage({super.key});
 
