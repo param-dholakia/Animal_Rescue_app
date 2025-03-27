@@ -1,3 +1,4 @@
+// admin_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -38,7 +39,6 @@ class AdminDashboardPageState extends State<AdminDashboardPage> {
     const ReportManagementPage(),
     const AnalyticsPage(),
     const NGORegistriesPage(),
-    const PushNotificationPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -51,8 +51,20 @@ class AdminDashboardPageState extends State<AdminDashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Dashboard', style: GoogleFonts.inter(color: Colors.white)),
+        title: Text(
+          'Admin Dashboard',
+          style: GoogleFonts.inter(color: Colors.white),
+        ),
         backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: () {
+              setState(() {}); // This will trigger a rebuild of the page
+            },
+            tooltip: 'Refresh',
+          ),
+        ],
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -60,7 +72,6 @@ class AdminDashboardPageState extends State<AdminDashboardPage> {
           BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Reports'),
           BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
           BottomNavigationBarItem(icon: Icon(Icons.group), label: 'NGO Registries'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
@@ -232,17 +243,23 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
     );
   }
 
-  Future<void> _viewInDrive(String folderUrl) async {
-    final Uri uri = Uri.parse(folderUrl);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+  Future<void> _openInGoogleMaps(double? latitude, double? longitude) async {
+    if (latitude != null && longitude != null) {
+      final String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+      final Uri uri = Uri.parse(googleMapsUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open Google Maps')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the Google Drive folder')),
+        const SnackBar(content: Text('Location coordinates not available')),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -327,8 +344,20 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Category: ${data['category'] ?? 'N/A'}'),
-                                Text(
-                                  'Location: ${location != null ? "${location['latitude']}, ${location['longitude']}" : 'N/A'}',
+                                Row(
+                                  children: [
+                                    const Text('Location: '),
+                                    TextButton(
+                                      onPressed: () => _openInGoogleMaps(
+                                        location?['latitude'] as double?,
+                                        location?['longitude'] as double?,
+                                      ),
+                                      child: const Text(
+                                        'See Location',
+                                        style: TextStyle(color: Colors.blue),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                   'Description: ${data['description'] ?? 'No Description'}',
@@ -339,7 +368,8 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                                   style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[500]),
                                 ),
                                 const SizedBox(height: 8),
-                                Row(
+                                Wrap(
+                                  spacing: 8.0,
                                   children: [
                                     IconButton(
                                       icon: Icon(
@@ -357,11 +387,6 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                                       onPressed: hasAudio ? () => _playAudio(data['audioUrl']) : null,
                                       tooltip: 'Play Audio',
                                     ),
-                                    if (data['folderUrl'] != null)
-                                      TextButton(
-                                        onPressed: () => _viewInDrive(data['folderUrl']),
-                                        child: const Text('View in Drive'),
-                                      ),
                                   ],
                                 ),
                               ],
@@ -446,8 +471,6 @@ class AnalyticsPage extends StatelessWidget {
     );
   }
 }
-
-
 
 class NGORegistriesPage extends StatefulWidget {
   const NGORegistriesPage({super.key});
@@ -595,19 +618,6 @@ class _NGORegistriesPageState extends State<NGORegistriesPage> {
           ),
         ),
       ],
-    );
-  }
-}
-class PushNotificationPage extends StatelessWidget {
-  const PushNotificationPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Push Notification Control Page',
-        style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
-      ),
     );
   }
 }
