@@ -50,6 +50,8 @@ dependencies:
   intl: ^0.18.0
   cached_network_image: ^3.3.0  # For loading images
   audioplayers: ^5.2.0
+  mailer: ^6.1.0
+  flutter_spinkit: ^5.2.1
 
 
 
