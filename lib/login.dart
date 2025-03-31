@@ -2,28 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'ngo_dashboard.dart'; // Import the NGO dashboard
-import 'admin_dashboard.dart'; // Import the Admin dashboard
-
-void main() {
-  runApp(const PawSaviorApp());
-}
-
-class PawSaviorApp extends StatelessWidget {
-  const PawSaviorApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Paw Saviour',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
-    );
-  }
-}
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'ngo_dashboard.dart';
+import 'admin_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -54,9 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       if (_selectedRole == 'NGO') {
@@ -69,9 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(content: Text('Login failed: $e')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 
@@ -79,7 +57,6 @@ class _LoginPageState extends State<LoginPage> {
     final email = _idController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Query the approved-ngos collection for the email
     final snapshot = await FirebaseFirestore.instance
         .collection('approved-ngos')
         .where('email', isEqualTo: email)
@@ -94,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
       throw Exception('Incorrect password');
     }
 
-    // Navigate to NGO dashboard
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const NGODashboardPage()),
@@ -105,7 +81,6 @@ class _LoginPageState extends State<LoginPage> {
     final adminId = _idController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Query the admins collection using the document ID
     final docRef = FirebaseFirestore.instance.collection('admins').doc(adminId);
     final docSnapshot = await docRef.get();
 
@@ -118,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
       throw Exception('Incorrect password');
     }
 
-    // Navigate to Admin dashboard
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const AdminDashboardPage()),
@@ -131,7 +105,8 @@ class _LoginPageState extends State<LoginPage> {
       path: 'paramdholakia1@gmail.com',
       queryParameters: {
         'subject': 'Paw Saviour: Password Reset Request',
-        'body': 'Dear Admin,\n\nI have forgotten my password for the Paw Saviour app. My ${_selectedRole == 'NGO' ? 'email' : 'ID'} is ${_idController.text.trim()}. Please assist me with resetting my password.\n\nThank you,\n[Your Name]'
+        'body':
+            'Dear Admin,\n\nI have forgotten my password for the Paw Saviour app. My ${_selectedRole == 'NGO' ? 'email' : 'ID'} is ${_idController.text.trim()}. Please assist me with resetting my password.\n\nThank you,\n[Your Name]',
       },
     );
 
@@ -147,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue, // Solid blue background to match app theme
+      backgroundColor: Colors.blue,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -155,39 +130,29 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // App Logo or Icon
-                const Icon(
-                  Icons.pets,
-                  size: 80,
-                  color: Colors.white,
-                ),
+                const Icon(Icons.pets, size: 80, color: Colors.white),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Paw Saviour',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Login to your account',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
+                  style: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
                 ),
                 const SizedBox(height: 32),
-                // Login Form
                 Container(
                   padding: const EdgeInsets.all(24.0),
-                  color: Colors.white, // Simple white background for the form
+                  color: Colors.white,
                   child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        // Role Selection Dropdown
                         DropdownButtonFormField<String>(
                           value: _selectedRole,
                           decoration: const InputDecoration(
@@ -195,24 +160,17 @@ class _LoginPageState extends State<LoginPage> {
                             border: OutlineInputBorder(),
                           ),
                           items: const [
-                            DropdownMenuItem(
-                              value: 'NGO',
-                              child: Text('NGO'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Admin',
-                              child: Text('Admin'),
-                            ),
+                            DropdownMenuItem(value: 'NGO', child: Text('NGO')),
+                            DropdownMenuItem(value: 'Admin', child: Text('Admin')),
                           ],
                           onChanged: (value) {
                             setState(() {
                               _selectedRole = value!;
-                              _idController.clear(); // Clear the ID field when role changes
+                              _idController.clear();
                             });
                           },
                         ),
                         const SizedBox(height: 16),
-                        // ID/Email Field
                         TextFormField(
                           controller: _idController,
                           focusNode: _idFocusNode,
@@ -227,10 +185,8 @@ class _LoginPageState extends State<LoginPage> {
                               ? TextInputType.emailAddress
                               : TextInputType.text,
                           textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (value) {
-                            // Move focus to password field when "Enter" is pressed
-                            FocusScope.of(context).requestFocus(_passwordFocusNode);
-                          },
+                          onFieldSubmitted: (_) =>
+                              FocusScope.of(context).requestFocus(_passwordFocusNode),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return _selectedRole == 'NGO'
@@ -238,15 +194,13 @@ class _LoginPageState extends State<LoginPage> {
                                   : 'Please enter your Admin ID';
                             }
                             if (_selectedRole == 'NGO' &&
-                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                    .hasMatch(value)) {
+                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Password Field
                         TextFormField(
                           controller: _passwordController,
                           focusNode: _passwordFocusNode,
@@ -257,64 +211,46 @@ class _LoginPageState extends State<LoginPage> {
                               icon: Icon(
                                 _obscurePassword ? Icons.visibility : Icons.visibility_off,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                             ),
                             border: const OutlineInputBorder(),
                           ),
                           obscureText: _obscurePassword,
                           textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (value) {
-                            // Trigger login when "Enter" is pressed in the password field
-                            _login();
-                          },
+                          onFieldSubmitted: (_) => _login(),
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
-                            }
+                            if (value == null || value.isEmpty) return 'Please enter your password';
+                            if (value.length < 6) return 'Password must be at least 6 characters';
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Forgot Password Link
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: _contactAdminForPassword,
-                            child: const Text(
+                            child: Text(
                               'Forgot Password?',
-                              style: TextStyle(color: Colors.blue),
+                              style: GoogleFonts.inter(color: Colors.blue),
                             ),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Login Button
                         _isLoading
-                            ? const SpinKitCircle(
-                                color: Colors.blue,
-                                size: 50,
-                              )
+                            ? const SpinKitFadingCircle(color: Colors.blue, size: 50)
                             : ElevatedButton(
                                 onPressed: _login,
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 50),
                                   backgroundColor: Colors.blue,
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Login',
-                                  style: TextStyle(fontSize: 18),
+                                  style: GoogleFonts.inter(fontSize: 18),
                                 ),
-                              ),
+                              ).animate().fadeIn(duration: 300.ms),
                       ],
                     ),
                   ),
