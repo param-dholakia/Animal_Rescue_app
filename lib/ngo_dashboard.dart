@@ -7,7 +7,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class NGODashboardPage extends StatefulWidget {
-  const NGODashboardPage({super.key});
+  final String ngoName; // Use ngoName instead of ngoEmail
+  const NGODashboardPage({super.key, required this.ngoName});
 
   @override
   State<NGODashboardPage> createState() => _NGODashboardPageState();
@@ -15,22 +16,27 @@ class NGODashboardPage extends StatefulWidget {
 
 class _NGODashboardPageState extends State<NGODashboardPage> {
   int _selectedIndex = 0;
-  final List<Widget> _pages = [
-    const NGOHomePage(),
-    const NGOReportsPage(),
-    const NGOProfilePage(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      NGOHomePage(ngoName: widget.ngoName),
+      NGOReportsPage(ngoName: widget.ngoName),
+      NGOProfilePage(ngoName: widget.ngoName),
+    ];
+  }
 
   Future<String> _getNGOName() async {
-    const String userId = 'sample-ngo-id'; // Replace with auth
-    final doc = await FirebaseFirestore.instance.collection('approved-ngos').doc(userId).get();
+    final doc = await FirebaseFirestore.instance.collection('approved-ngos').doc(widget.ngoName).get();
     return doc.exists ? (doc.data()?['ngoName'] ?? 'NGO') : 'NGO';
   }
 
   Future<Map<String, int>> _getReportStats() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('reports')
-        .where('assignedTo', isEqualTo: 'sample-ngo-id')
+        .where('assignedTo', isEqualTo: widget.ngoName) // Use ngoName for assignedTo
         .get();
     final stats = {'Total': snapshot.docs.length, 'In Progress': 0, 'Solved': 0};
     for (var doc in snapshot.docs) {
@@ -50,7 +56,9 @@ class _NGODashboardPageState extends State<NGODashboardPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
           ),
         ],
       ),
@@ -71,7 +79,8 @@ class _NGODashboardPageState extends State<NGODashboardPage> {
 }
 
 class NGOHomePage extends StatelessWidget {
-  const NGOHomePage({super.key});
+  final String ngoName;
+  const NGOHomePage({super.key, required this.ngoName});
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +106,7 @@ class NGOHomePage extends StatelessWidget {
               const SizedBox(height: 16),
               Card(
                 elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -104,23 +114,42 @@ class NGOHomePage extends StatelessWidget {
                     children: [
                       Text('Your Stats', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Text('Total Cases: ${stats['Total']}', style: GoogleFonts.inter()),
-                      Text('In Progress: ${stats['In Progress']}', style: GoogleFonts.inter()),
-                      Text('Completed: ${stats['Solved']}', style: GoogleFonts.inter()),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Total Cases:', style: GoogleFonts.inter()),
+                          Text('${stats['Total']}', style: GoogleFonts.inter(color: Colors.blue)),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('In Progress:', style: GoogleFonts.inter()),
+                          Text('${stats['In Progress']}', style: GoogleFonts.inter(color: Colors.orange)),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Completed:', style: GoogleFonts.inter()),
+                          Text('${stats['Solved']}', style: GoogleFonts.inter(color: Colors.green)),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NGOReportsPage())),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NGOReportsPage(ngoName: ngoName))),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                child: Text('View Assigned Reports', style: GoogleFonts.inter()),
-              ),
+                child: Text('View Reports', style: GoogleFonts.inter(fontSize: 16)),
+              ).animate().scale(duration: 300.ms),
             ],
           ),
         );

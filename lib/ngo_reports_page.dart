@@ -10,7 +10,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class NGOReportsPage extends StatefulWidget {
-  const NGOReportsPage({super.key});
+  final String ngoName; // Use ngoName instead of ngoEmail
+  const NGOReportsPage({super.key, required this.ngoName});
 
   @override
   State<NGOReportsPage> createState() => _NGOReportsPageState();
@@ -23,7 +24,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
   final TextEditingController _searchController = TextEditingController();
   bool _isPlaying = false;
   bool _isLoadingAudio = false;
-  final String ngoId = 'sample-ngo-id'; // Replace with auth
+  bool _showAssigned = true;
   String _statusFilter = 'All';
 
   @override
@@ -36,7 +37,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
 
   Future<void> _takeCase(String docId) async {
     await reportsCollection.doc(docId).update({
-      'assignedTo': ngoId,
+      'assignedTo': widget.ngoName, // Use ngoName for assignedTo
       'status': 'In Progress',
       'takenAt': FieldValue.serverTimestamp(),
     });
@@ -61,6 +62,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                 'status': 'Solved',
                 'resolutionComment': _commentController.text,
                 'resolvedAt': FieldValue.serverTimestamp(),
+                'resolvedBy': widget.ngoName, // Use ngoName for resolvedBy
               });
               _commentController.clear();
               Navigator.pop(context);
@@ -145,8 +147,14 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Assigned Reports', style: GoogleFonts.inter(color: Colors.white)),
+        title: Text('Reports', style: GoogleFonts.inter(color: Colors.white)),
         backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: () => setState(() {}),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -170,37 +178,50 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  value: _statusFilter,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
-                  items: const [
-                    DropdownMenuItem(value: 'All', child: Text('All')),
-                    DropdownMenuItem(value: 'Unsolved', child: Text('Unsolved')),
-                    DropdownMenuItem(value: 'In Progress', child: Text('In Progress')),
-                    DropdownMenuItem(value: 'Solved', child: Text('Solved')),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _statusFilter,
+                        decoration: const InputDecoration(border: OutlineInputBorder()),
+                        items: const [
+                          DropdownMenuItem(value: 'All', child: Text('All')),
+                          DropdownMenuItem(value: 'Unsolved', child: Text('Unsolved')),
+                          DropdownMenuItem(value: 'In Progress', child: Text('In Progress')),
+                          DropdownMenuItem(value: 'Solved', child: Text('Solved')),
+                        ],
+                        onChanged: (value) => setState(() => _statusFilter = value!),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Switch(
+                      value: _showAssigned,
+                      onChanged: (value) => setState(() => _showAssigned = value),
+                      activeColor: Colors.blue,
+                    ),
+                    Text(_showAssigned ? 'Assigned' : 'Unassigned', style: GoogleFonts.inter()),
                   ],
-                  onChanged: (value) => setState(() => _statusFilter = value!),
                 ),
               ],
             ),
           ),
           Expanded(
             child: StreamBuilder(
-              stream: reportsCollection.where('assignedTo', isEqualTo: ngoId).snapshots(),
+              stream: reportsCollection.orderBy('timestamp', descending: true).snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) return const Center(child: SpinKitFadingCircle(color: Colors.blue));
                 final reports = snapshot.data!.docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
                   final status = data['status'] ?? 'Unsolved';
                   final caseId = data['caseId']?.toString().toLowerCase() ?? '';
+                  final assignedTo = data['assignedTo'];
                   return (_statusFilter == 'All' || status == _statusFilter) &&
-                      caseId.contains(_searchController.text.toLowerCase());
+                      caseId.contains(_searchController.text.toLowerCase()) &&
+                      (_showAssigned ? assignedTo == widget.ngoName : (assignedTo == null || assignedTo == ''));
                 }).toList();
 
                 if (reports.isEmpty) {
-                  return Center(
-                    child: Text('No reports found', style: GoogleFonts.inter(fontSize: 16)),
-                  );
+                  return Center(child: Text('No reports found', style: GoogleFonts.inter(fontSize: 16)));
                 }
 
                 return ListView.builder(
@@ -208,14 +229,23 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                   itemBuilder: (context, index) {
                     final data = reports[index].data() as Map<String, dynamic>;
                     final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
+                    final takenAt = (data['takenAt'] as Timestamp?)?.toDate();
+                    final resolvedAt = (data['resolvedAt'] as Timestamp?)?.toDate();
                     final formattedTimestamp = timestamp != null
                         ? DateFormat('MMM dd, yyyy - HH:mm').format(timestamp)
                         : 'N/A';
+                    final formattedTakenAt = takenAt != null
+                        ? DateFormat('MMM dd, yyyy - HH:mm').format(takenAt)
+                        : 'Not Started';
+                    final formattedResolvedAt = resolvedAt != null
+                        ? DateFormat('MMM dd, yyyy - HH:mm').format(resolvedAt)
+                        : 'Not Resolved';
                     final status = data['status'] ?? 'Unsolved';
 
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       elevation: 4,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Column(
@@ -229,10 +259,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                                   style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                                 Chip(
-                                  label: Text(
-                                    status,
-                                    style: GoogleFonts.inter(color: Colors.white),
-                                  ),
+                                  label: Text(status, style: GoogleFonts.inter(color: Colors.white)),
                                   backgroundColor: status == 'Solved'
                                       ? Colors.green
                                       : status == 'In Progress'
@@ -250,11 +277,11 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                             ),
                             Text('Description: ${data['description'] ?? 'N/A'}', style: GoogleFonts.inter()),
                             Text('Submitted: $formattedTimestamp', style: GoogleFonts.inter(color: Colors.grey)),
+                            Text('Started: $formattedTakenAt', style: GoogleFonts.inter(color: Colors.blue)),
+                            if (status == 'Solved')
+                              Text('Resolved: $formattedResolvedAt', style: GoogleFonts.inter(color: Colors.green)),
                             if (data['resolutionComment'] != null)
-                              Text(
-                                'Rescue Details: ${data['resolutionComment']}',
-                                style: GoogleFonts.inter(color: Colors.green),
-                              ),
+                              Text('Details: ${data['resolutionComment']}', style: GoogleFonts.inter(color: Colors.green)),
                             const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -275,7 +302,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                                     onPressed: () => _takeCase(reports[index].id),
                                     tooltip: 'Take Case',
                                   ),
-                                if (status == 'In Progress')
+                                if (status == 'In Progress' && data['assignedTo'] == widget.ngoName)
                                   IconButton(
                                     icon: const Icon(FontAwesomeIcons.checkCircle, color: Colors.green),
                                     onPressed: () => _completeRescue(reports[index].id),

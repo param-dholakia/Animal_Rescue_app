@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'login.dart'; // Import the updated login.dart file
+import 'login.dart';
 import 'report.dart';
 import 'google_drive_service.dart';
-import 'register.dart'; // Import the new register.dart file
+import 'register.dart';
+import 'ngo_dashboard.dart'; // Import NGODashboardPage
+import 'admin_dashboard.dart'; // Import AdminDashboardPage
 
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
@@ -28,18 +30,12 @@ class HomePageWidget extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Login'),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()), // Updated to LoginPage
-              ),
+              onTap: () => Navigator.pushNamed(context, '/login'),
             ),
             ListTile(
-              leading: const Icon(Icons.person_add), // Icon for registration
+              leading: const Icon(Icons.person_add),
               title: const Text('Register'),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RegisterPageWidget()),
-              ),
+              onTap: () => Navigator.pushNamed(context, '/register'),
             ),
           ],
         ),
@@ -60,10 +56,7 @@ class HomePageWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 shape: const CircleBorder(),
               ),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ReportPageWidget()),
-              ),
+              onPressed: () => Navigator.pushNamed(context, '/report'),
               child: const Icon(
                 FontAwesomeIcons.paw,
                 color: Colors.white,
@@ -80,6 +73,7 @@ class HomePageWidget extends StatelessWidget {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -87,8 +81,21 @@ void main() async {
     print("✅ Firebase initialized successfully");
   } catch (e) {
     print("❌ Firebase initialization failed: $e");
+    runApp(const MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text(
+            'Failed to initialize Firebase. Please check your configuration.',
+            style: TextStyle(color: Colors.red, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ));
+    return;
   }
 
+  // Initialize Google Drive Service
   final driveService = GoogleDriveService();
   try {
     await driveService.authenticateWithGoogleDrive();
@@ -98,10 +105,26 @@ void main() async {
   }
 
   runApp(MaterialApp(
-    home: const HomePageWidget(),
+    initialRoute: '/',
+    routes: {
+      '/': (context) => const HomePageWidget(),
+      '/login': (context) => const LoginPage(),
+      '/register': (context) => const RegisterPageWidget(),
+      '/report': (context) => const ReportPageWidget(),
+      '/ngo_dashboard': (context) {
+        final ngoName = ModalRoute.of(context)!.settings.arguments as String?;
+        if (ngoName == null) {
+          return const Scaffold(
+            body: Center(child: Text('Error: NGO name not provided')),
+          );
+        }
+        return NGODashboardPage(ngoName: ngoName);
+      },
+      '/admin_dashboard': (context) => const AdminDashboardPage(),
+    },
     theme: ThemeData(
       primaryColor: Colors.blue,
-      useMaterial3: true, // Added for consistency with LoginPage
+      useMaterial3: true,
     ),
   ));
 }

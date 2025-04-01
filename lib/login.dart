@@ -4,8 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'ngo_dashboard.dart';
-import 'admin_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _idFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
-  String _selectedRole = 'NGO'; // Default role
+  String _selectedRole = 'NGO';
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -45,9 +43,7 @@ class _LoginPageState extends State<LoginPage> {
         await _loginAdmin();
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed: $e')));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -57,23 +53,31 @@ class _LoginPageState extends State<LoginPage> {
     final email = _idController.text.trim();
     final password = _passwordController.text.trim();
 
-    final snapshot = await FirebaseFirestore.instance
+    // Query Firestore for an NGO with the matching email
+    final querySnapshot = await FirebaseFirestore.instance
         .collection('approved-ngos')
         .where('email', isEqualTo: email)
+        .limit(1)
         .get();
 
-    if (snapshot.docs.isEmpty) {
-      throw Exception('No NGO found with this email');
+    if (querySnapshot.docs.isEmpty) {
+      throw Exception('No approved NGO found with this email');
     }
 
-    final ngoData = snapshot.docs.first.data();
-    if (ngoData['password'] != password) {
+    final doc = querySnapshot.docs.first;
+    final data = doc.data();
+    if (data['password'] != password) {
       throw Exception('Incorrect password');
     }
 
-    Navigator.pushReplacement(
+    // The document ID is the NGO name
+    final ngoName = doc.id;
+
+    // Navigate to NGODashboardPage, passing the ngoName
+    Navigator.pushReplacementNamed(
       context,
-      MaterialPageRoute(builder: (context) => const NGODashboardPage()),
+      '/ngo_dashboard',
+      arguments: ngoName,
     );
   }
 
@@ -84,19 +88,10 @@ class _LoginPageState extends State<LoginPage> {
     final docRef = FirebaseFirestore.instance.collection('admins').doc(adminId);
     final docSnapshot = await docRef.get();
 
-    if (!docSnapshot.exists) {
-      throw Exception('No admin found with this ID');
-    }
+    if (!docSnapshot.exists) throw Exception('No admin found with this ID');
+    if (docSnapshot.data()!['password'] != password) throw Exception('Incorrect password');
 
-    final adminData = docSnapshot.data()!;
-    if (adminData['password'] != password) {
-      throw Exception('Incorrect password');
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const AdminDashboardPage()),
-    );
+    Navigator.pushReplacementNamed(context, '/admin_dashboard');
   }
 
   Future<void> _contactAdminForPassword() async {
@@ -113,9 +108,7 @@ class _LoginPageState extends State<LoginPage> {
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open email client')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open email client')));
     }
   }
 
@@ -132,43 +125,31 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const Icon(Icons.pets, size: 80, color: Colors.white),
                 const SizedBox(height: 16),
-                Text(
-                  'Paw Saviour',
-                  style: GoogleFonts.inter(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                Text('Paw Saviour', style: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 8),
-                Text(
-                  'Login to your account',
-                  style: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
-                ),
+                Text('Login to your account', style: GoogleFonts.inter(fontSize: 16, color: Colors.white70)),
                 const SizedBox(height: 32),
                 Container(
                   padding: const EdgeInsets.all(24.0),
-                  color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
                         DropdownButtonFormField<String>(
                           value: _selectedRole,
-                          decoration: const InputDecoration(
-                            labelText: 'Login As',
-                            border: OutlineInputBorder(),
-                          ),
+                          decoration: const InputDecoration(labelText: 'Login As', border: OutlineInputBorder()),
                           items: const [
                             DropdownMenuItem(value: 'NGO', child: Text('NGO')),
                             DropdownMenuItem(value: 'Admin', child: Text('Admin')),
                           ],
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedRole = value!;
-                              _idController.clear();
-                            });
-                          },
+                          onChanged: (value) => setState(() {
+                            _selectedRole = value!;
+                            _idController.clear();
+                          }),
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -176,25 +157,17 @@ class _LoginPageState extends State<LoginPage> {
                           focusNode: _idFocusNode,
                           decoration: InputDecoration(
                             labelText: _selectedRole == 'NGO' ? 'Email' : 'Admin ID',
-                            prefixIcon: Icon(
-                              _selectedRole == 'NGO' ? Icons.email : Icons.person,
-                            ),
+                            prefixIcon: Icon(_selectedRole == 'NGO' ? Icons.email : Icons.person),
                             border: const OutlineInputBorder(),
                           ),
-                          keyboardType: _selectedRole == 'NGO'
-                              ? TextInputType.emailAddress
-                              : TextInputType.text,
+                          keyboardType: _selectedRole == 'NGO' ? TextInputType.emailAddress : TextInputType.text,
                           textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (_) =>
-                              FocusScope.of(context).requestFocus(_passwordFocusNode),
+                          onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocusNode),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return _selectedRole == 'NGO'
-                                  ? 'Please enter your email'
-                                  : 'Please enter your Admin ID';
+                              return _selectedRole == 'NGO' ? 'Please enter your email' : 'Please enter your Admin ID';
                             }
-                            if (_selectedRole == 'NGO' &&
-                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                            if (_selectedRole == 'NGO' && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
@@ -208,9 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                             labelText: 'Password',
                             prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                              ),
+                              icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                               onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                             ),
                             border: const OutlineInputBorder(),
@@ -229,10 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: _contactAdminForPassword,
-                            child: Text(
-                              'Forgot Password?',
-                              style: GoogleFonts.inter(color: Colors.blue),
-                            ),
+                            child: Text('Forgot Password?', style: GoogleFonts.inter(color: Colors.blue)),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -246,10 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                 ),
-                                child: Text(
-                                  'Login',
-                                  style: GoogleFonts.inter(fontSize: 18),
-                                ),
+                                child: Text('Login', style: GoogleFonts.inter(fontSize: 18)),
                               ).animate().fadeIn(duration: 300.ms),
                       ],
                     ),
