@@ -84,58 +84,86 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
     );
   }
 
-  void _playAudio(String audioUrl) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: StatefulBuilder(
-          builder: (context, setState) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Playing Audio', style: TextStyle(fontSize: 18)),
-              _isLoadingAudio
-                  ? const SpinKitFadingCircle(color: Colors.blue, size: 50)
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                          onPressed: () async {
-                            if (_isPlaying) {
-                              await _audioPlayer.pause();
-                              setState(() => _isPlaying = false);
-                            } else {
-                              setState(() => _isLoadingAudio = true);
+  void _playAudio(String audioUrl) async {
+  showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      child: StatefulBuilder(
+        builder: (context, setState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Playing Audio', style: TextStyle(fontSize: 18)),
+            _isLoadingAudio
+                ? const SpinKitFadingCircle(color: Colors.blue, size: 50)
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+                        onPressed: () async {
+                          if (_isPlaying) {
+                            await _audioPlayer.pause();
+                            setState(() => _isPlaying = false);
+                          } else {
+                            setState(() {
+                              _isLoadingAudio = true;
+                            });
+
+                            try {
                               await _audioPlayer.play(UrlSource(audioUrl));
                               setState(() {
                                 _isPlaying = true;
                                 _isLoadingAudio = false;
                               });
+                            } catch (e) {
+                              setState(() {
+                                _isLoadingAudio = false;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Error occurred while playing audio.')),
+                              );
                             }
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.stop),
-                          onPressed: () async {
-                            await _audioPlayer.stop();
-                            setState(() => _isPlaying = false);
-                          },
-                        ),
-                      ],
-                    ),
-              TextButton(
-                onPressed: () async {
-                  await _audioPlayer.stop();
-                  Navigator.pop(context);
-                },
-                child: const Text('Close'),
-              ),
-            ],
-          ),
+                          }
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.stop),
+                        onPressed: () async {
+                          await _audioPlayer.stop();
+                          setState(() => _isPlaying = false);
+                        },
+                      ),
+                    ],
+                  ),
+            TextButton(
+              onPressed: () async {
+                await _audioPlayer.stop();
+                Navigator.pop(context); // Close dialog and stop the audio
+                setState(() {
+                  _isPlaying = false;
+                  _isLoadingAudio = false; // Reset state when dialog closes
+                });
+              },
+              child: const Text('Close'),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  ).then((_) {
+    // When the dialog is closed, stop the audio if it's playing
+    if (_isPlaying) {
+      _audioPlayer.stop();
+      setState(() {
+        _isPlaying = false;
+        _isLoadingAudio = false;
+      });
+    }
+  });
+}
+
+
+
 
   Future<void> _openInGoogleMaps(double? latitude, double? longitude) async {
     if (latitude != null && longitude != null) {
@@ -283,6 +311,7 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                   final report = filteredReports[index];
                   final data = report.data() as Map<String, dynamic>;
                   final location = data['location'] as Map<String, dynamic>?;
+
                   final status = data['status'] ?? 'Unsolved';
                   final hasImage = data['imageUrl'] != null;
                   final hasAudio = data['audioUrl'] != null;
@@ -323,7 +352,7 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                           Text('Description: ${data['description'] ?? 'N/A'}'),
                           Text('Assigned To: ${data['assignedTo'] ?? 'Unassigned'}'),
                           Text('Submitted: $formattedTimestamp'),
-                          if (data['resolutionComment'] != null) ...[
+                          if (data['resolutionComment'] != null) ...[ 
                             Text('Rescue Details: ${data['resolutionComment']}', style: GoogleFonts.inter(color: Colors.green)),
                             Text('Resolved: $resolvedTimestamp', style: GoogleFonts.inter(color: Colors.green)),
                           ],
@@ -334,33 +363,31 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                                 onPressed: hasImage ? () => _showImage(data['imageUrl']) : null,
                               ),
                               IconButton(
-                                icon: Icon(Icons.audiotrack, color: hasAudio ? Colors.blue : Colors.grey),
+                                icon: Icon(Icons.volume_up, color: hasAudio ? Colors.blue : Colors.grey),
                                 onPressed: hasAudio ? () => _playAudio(data['audioUrl']) : null,
                               ),
                             ],
                           ),
                         ],
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (data['assignedTo'] == null || data['assignedTo'] == 'Unassigned')
-                            IconButton(
-                              icon: const Icon(FontAwesomeIcons.userPlus),
-                              onPressed: () => _showAssignNGODialog(report.id, data),
-                            ),
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _updateReport(report.id, data),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _deleteReport(report.id),
-                          ),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (value) {
+                          if (value == 'Assign') {
+                            _showAssignNGODialog(report.id, data);
+                          } else if (value == 'Update') {
+                            _updateReport(report.id, data);
+                          } else if (value == 'Delete') {
+                            _deleteReport(report.id);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(value: 'Assign', child: Text('Assign to NGO')),
+                          const PopupMenuItem(value: 'Update', child: Text('Update Status')),
+                          const PopupMenuItem(value: 'Delete', child: Text('Delete Report')),
                         ],
                       ),
                     ),
-                  ).animate().fadeIn(duration: 300.ms);
+                  );
                 },
               );
             },
