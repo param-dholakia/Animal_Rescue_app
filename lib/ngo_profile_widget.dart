@@ -1,11 +1,13 @@
+// ngo_profile_widget.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 
 class NGOProfilePage extends StatefulWidget {
-  final String ngoName; // Use ngoName instead of ngoEmail
+  final String ngoName;
   const NGOProfilePage({super.key, required this.ngoName});
 
   @override
@@ -17,6 +19,7 @@ class _NGOProfilePageState extends State<NGOProfilePage> {
   late TextEditingController _nameController, _emailController, _phoneController, _passwordController;
   bool _isEditing = false;
   bool _isChangingPassword = false;
+  String? _lastUpdated;
 
   @override
   void initState() {
@@ -35,6 +38,10 @@ class _NGOProfilePageState extends State<NGOProfilePage> {
       _nameController.text = data['ngoName'] ?? '';
       _emailController.text = data['email'] ?? '';
       _phoneController.text = data['phone'] ?? '';
+      final timestamp = data['lastUpdated'] as Timestamp?;
+      setState(() {
+        _lastUpdated = timestamp != null ? DateFormat('MMM dd, yyyy - HH:mm').format(timestamp.toDate()) : null;
+      });
     }
   }
 
@@ -44,7 +51,9 @@ class _NGOProfilePageState extends State<NGOProfilePage> {
         'ngoName': _nameController.text,
         'email': _emailController.text,
         'phone': _phoneController.text,
+        'lastUpdated': FieldValue.serverTimestamp(),
       });
+      await _loadProfile();
       setState(() => _isEditing = false);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated')));
     }
@@ -58,7 +67,9 @@ class _NGOProfilePageState extends State<NGOProfilePage> {
     try {
       await FirebaseFirestore.instance.collection('approved-ngos').doc(widget.ngoName).update({
         'password': _passwordController.text,
+        'lastUpdated': FieldValue.serverTimestamp(),
       });
+      await _loadProfile();
       setState(() => _isChangingPassword = false);
       _passwordController.clear();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password updated')));
@@ -95,123 +106,121 @@ class _NGOProfilePageState extends State<NGOProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile', style: GoogleFonts.inter(color: Colors.white)),
-        backgroundColor: Colors.blue,
-      ),
-      body: Padding(
+    return SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'NGO Profile',
-                  style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'NGO Profile',
+                style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'NGO Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.group),
                 ),
-                const SizedBox(height: 16),
+                enabled: _isEditing,
+                validator: (value) => value!.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email),
+                ),
+                enabled: _isEditing,
+                validator: (value) => value!.contains('@') ? null : 'Invalid email',
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                enabled: _isEditing,
+                validator: (value) => value!.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 16),
+              if (_isChangingPassword)
                 TextFormField(
-                  controller: _nameController,
+                  controller: _passwordController,
                   decoration: const InputDecoration(
-                    labelText: 'NGO Name',
+                    labelText: 'New Password',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.group),
+                    prefixIcon: Icon(Icons.lock),
                   ),
-                  enabled: _isEditing,
-                  validator: (value) => value!.isEmpty ? 'Required' : null,
+                  obscureText: true,
+                  validator: (value) => value!.length < 6 ? 'Password must be at least 6 characters' : null,
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  enabled: _isEditing,
-                  validator: (value) => value!.contains('@') ? null : 'Invalid email',
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                  enabled: _isEditing,
-                  validator: (value) => value!.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                if (_isChangingPassword)
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'New Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+              const SizedBox(height: 24),
+              if (_lastUpdated != null)
+                Text('Last Updated: $_lastUpdated', style: GoogleFonts.inter(color: Colors.grey)),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: [
+                  ElevatedButton(
+                    onPressed: _isEditing
+                        ? _updateProfile
+                        : _isChangingPassword
+                            ? _changePassword
+                            : () => setState(() => _isEditing = true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    obscureText: true,
-                    validator: (value) => value!.length < 6 ? 'Password must be at least 6 characters' : null,
-                  ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _isEditing
-                          ? _updateProfile
-                          : _isChangingPassword
-                              ? _changePassword
-                              : () => setState(() => _isEditing = true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
+                    child: Text(
+                      _isEditing ? 'Save' : _isChangingPassword ? 'Update Password' : 'Edit',
+                      style: GoogleFonts.inter(),
+                    ),
+                  ).animate().scale(duration: 300.ms),
+                  if (!_isEditing && !_isChangingPassword)
+                    OutlinedButton(
+                      onPressed: _contactAdmin,
+                      style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                      child: Text(
-                        _isEditing ? 'Save' : _isChangingPassword ? 'Update Password' : 'Edit',
-                        style: GoogleFonts.inter(),
+                      child: Text('Contact Admin', style: GoogleFonts.inter(color: Colors.blue)),
+                    ).animate().fadeIn(duration: 300.ms),
+                  if (!_isEditing && !_isChangingPassword)
+                    OutlinedButton(
+                      onPressed: () => setState(() => _isChangingPassword = true),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                    ).animate().scale(duration: 300.ms),
-                    if (!_isEditing && !_isChangingPassword)
-                      OutlinedButton(
-                        onPressed: _contactAdmin,
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: Text('Contact Admin', style: GoogleFonts.inter(color: Colors.blue)),
-                      ).animate().fadeIn(duration: 300.ms),
-                    if (!_isEditing && !_isChangingPassword)
-                      OutlinedButton(
-                        onPressed: () => setState(() => _isChangingPassword = true),
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: Text('Change Password', style: GoogleFonts.inter(color: Colors.blue)),
-                      ).animate().fadeIn(duration: 300.ms),
-                  ],
-                ),
-                if (_isEditing || _isChangingPassword)
-                  TextButton(
-                    onPressed: () {
-                      _loadProfile();
-                      setState(() {
-                        _isEditing = false;
-                        _isChangingPassword = false;
-                        _passwordController.clear();
-                      });
-                    },
-                    child: const Text('Cancel'),
-                  ).animate().slideX(duration: 300.ms, begin: 0.1),
-              ],
-            ),
+                      child: Text('Change Password', style: GoogleFonts.inter(color: Colors.blue)),
+                    ).animate().fadeIn(duration: 300.ms),
+                ],
+              ),
+              if (_isEditing || _isChangingPassword)
+                TextButton(
+                  onPressed: () {
+                    _loadProfile();
+                    setState(() {
+                      _isEditing = false;
+                      _isChangingPassword = false;
+                      _passwordController.clear();
+                    });
+                  },
+                  child: const Text('Cancel'),
+                ).animate().slideX(duration: 300.ms, begin: 0.1),
+            ],
           ),
         ),
-      ).animate().fadeIn(duration: 500.ms),
-    );
+      ),
+    ).animate().fadeIn(duration: 500.ms);
   }
 }

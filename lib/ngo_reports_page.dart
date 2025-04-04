@@ -1,3 +1,4 @@
+// ngo_reports_page.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class NGOReportsPage extends StatefulWidget {
-  final String ngoName; // Use ngoName instead of ngoEmail
+  final String ngoName;
   const NGOReportsPage({super.key, required this.ngoName});
 
   @override
@@ -37,7 +38,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
 
   Future<void> _takeCase(String docId) async {
     await reportsCollection.doc(docId).update({
-      'assignedTo': widget.ngoName, // Use ngoName for assignedTo
+      'assignedTo': widget.ngoName,
       'status': 'In Progress',
       'takenAt': FieldValue.serverTimestamp(),
     });
@@ -62,7 +63,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                 'status': 'Solved',
                 'resolutionComment': _commentController.text,
                 'resolvedAt': FieldValue.serverTimestamp(),
-                'resolvedBy': widget.ngoName, // Use ngoName for resolvedBy
+                'resolvedBy': widget.ngoName,
               });
               _commentController.clear();
               Navigator.pop(context);
@@ -145,145 +146,139 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Reports', style: GoogleFonts.inter(color: Colors.white)),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () => setState(() {}),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    labelText: 'Search by Case ID',
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {});
-                      },
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Search by Case ID',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {});
+                    },
+                  ),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _statusFilter,
+                      decoration: const InputDecoration(border: OutlineInputBorder()),
+                      items: const [
+                        DropdownMenuItem(value: 'All', child: Text('All')),
+                        DropdownMenuItem(value: 'Unsolved', child: Text('Unsolved')),
+                        DropdownMenuItem(value: 'In Progress', child: Text('In Progress')),
+                        DropdownMenuItem(value: 'Solved', child: Text('Solved')),
+                      ],
+                      onChanged: (value) => setState(() => _statusFilter = value!),
                     ),
                   ),
-                  onChanged: (_) => setState(() {}),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _statusFilter,
-                        decoration: const InputDecoration(border: OutlineInputBorder()),
-                        items: const [
-                          DropdownMenuItem(value: 'All', child: Text('All')),
-                          DropdownMenuItem(value: 'Unsolved', child: Text('Unsolved')),
-                          DropdownMenuItem(value: 'In Progress', child: Text('In Progress')),
-                          DropdownMenuItem(value: 'Solved', child: Text('Solved')),
-                        ],
-                        onChanged: (value) => setState(() => _statusFilter = value!),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Switch(
-                      value: _showAssigned,
-                      onChanged: (value) => setState(() => _showAssigned = value),
-                      activeColor: Colors.blue,
-                    ),
-                    Text(_showAssigned ? 'Assigned' : 'Unassigned', style: GoogleFonts.inter()),
-                  ],
-                ),
-              ],
-            ),
+                  const SizedBox(width: 8),
+                  Switch(
+                    value: _showAssigned,
+                    onChanged: (value) => setState(() => _showAssigned = value),
+                    activeColor: Colors.blue,
+                  ),
+                  Text(_showAssigned ? 'Assigned' : 'Unassigned', style: GoogleFonts.inter()),
+                ],
+              ),
+            ],
           ),
-          Expanded(
-            child: StreamBuilder(
-              stream: reportsCollection.orderBy('timestamp', descending: true).snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) return const Center(child: SpinKitFadingCircle(color: Colors.blue));
-                final reports = snapshot.data!.docs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
+        ),
+        Expanded(
+          child: StreamBuilder(
+            stream: reportsCollection.orderBy('timestamp', descending: true).snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) return const Center(child: SpinKitFadingCircle(color: Colors.blue));
+              final reports = snapshot.data!.docs.where((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final status = data['status'] ?? 'Unsolved';
+                final caseId = data['caseId']?.toString().toLowerCase() ?? '';
+                final assignedTo = data['assignedTo'];
+                return (_statusFilter == 'All' || status == _statusFilter) &&
+                    caseId.contains(_searchController.text.toLowerCase()) &&
+                    (_showAssigned ? assignedTo == widget.ngoName : (assignedTo == null || assignedTo == ''));
+              }).toList();
+
+              if (reports.isEmpty) {
+                return Center(child: Text('No reports found', style: GoogleFonts.inter(fontSize: 16)));
+              }
+
+              return ListView.builder(
+                itemCount: reports.length,
+                itemBuilder: (context, index) {
+                  final data = reports[index].data() as Map<String, dynamic>;
+                  final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
+                  final takenAt = (data['takenAt'] as Timestamp?)?.toDate();
+                  final resolvedAt = (data['resolvedAt'] as Timestamp?)?.toDate();
+                  final formattedTimestamp = timestamp != null
+                      ? DateFormat('MMM dd, yyyy - HH:mm').format(timestamp)
+                      : 'N/A';
+                  final formattedTakenAt = takenAt != null
+                      ? DateFormat('MMM dd, yyyy - HH:mm').format(takenAt)
+                      : 'Not Started';
+                  final formattedResolvedAt = resolvedAt != null
+                      ? DateFormat('MMM dd, yyyy - HH:mm').format(resolvedAt)
+                      : 'Not Resolved';
                   final status = data['status'] ?? 'Unsolved';
-                  final caseId = data['caseId']?.toString().toLowerCase() ?? '';
-                  final assignedTo = data['assignedTo'];
-                  return (_statusFilter == 'All' || status == _statusFilter) &&
-                      caseId.contains(_searchController.text.toLowerCase()) &&
-                      (_showAssigned ? assignedTo == widget.ngoName : (assignedTo == null || assignedTo == ''));
-                }).toList();
 
-                if (reports.isEmpty) {
-                  return Center(child: Text('No reports found', style: GoogleFonts.inter(fontSize: 16)));
-                }
-
-                return ListView.builder(
-                  itemCount: reports.length,
-                  itemBuilder: (context, index) {
-                    final data = reports[index].data() as Map<String, dynamic>;
-                    final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
-                    final takenAt = (data['takenAt'] as Timestamp?)?.toDate();
-                    final resolvedAt = (data['resolvedAt'] as Timestamp?)?.toDate();
-                    final formattedTimestamp = timestamp != null
-                        ? DateFormat('MMM dd, yyyy - HH:mm').format(timestamp)
-                        : 'N/A';
-                    final formattedTakenAt = takenAt != null
-                        ? DateFormat('MMM dd, yyyy - HH:mm').format(takenAt)
-                        : 'Not Started';
-                    final formattedResolvedAt = resolvedAt != null
-                        ? DateFormat('MMM dd, yyyy - HH:mm').format(resolvedAt)
-                        : 'Not Resolved';
-                    final status = data['status'] ?? 'Unsolved';
-
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
                                   data['caseId'] ?? 'N/A',
                                   style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                Chip(
-                                  label: Text(status, style: GoogleFonts.inter(color: Colors.white)),
-                                  backgroundColor: status == 'Solved'
-                                      ? Colors.green
-                                      : status == 'In Progress'
-                                          ? Colors.orange
-                                          : Colors.red,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text('Category: ${data['category'] ?? 'N/A'}', style: GoogleFonts.inter()),
-                            TextButton(
-                              onPressed: () => _openInGoogleMaps(
-                                  data['location']?['latitude'], data['location']?['longitude']),
-                              child: const Text('See Location', style: TextStyle(color: Colors.blue)),
-                            ),
-                            Text('Description: ${data['description'] ?? 'N/A'}', style: GoogleFonts.inter()),
-                            Text('Submitted: $formattedTimestamp', style: GoogleFonts.inter(color: Colors.grey)),
-                            Text('Started: $formattedTakenAt', style: GoogleFonts.inter(color: Colors.blue)),
-                            if (status == 'Solved')
-                              Text('Resolved: $formattedResolvedAt', style: GoogleFonts.inter(color: Colors.green)),
+                              ),
+                              Chip(
+                                label: Text(status, style: GoogleFonts.inter(color: Colors.white)),
+                                backgroundColor: status == 'Solved'
+                                    ? Colors.green
+                                    : status == 'In Progress'
+                                        ? Colors.orange
+                                        : Colors.red,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Category: ${data['category'] ?? 'N/A'}', style: GoogleFonts.inter()),
+                          TextButton(
+                            onPressed: () => _openInGoogleMaps(data['location']?['latitude'], data['location']?['longitude']),
+                            child: const Text('See Location', style: TextStyle(color: Colors.blue)),
+                          ),
+                          Text('Description: ${data['description'] ?? 'N/A'}', style: GoogleFonts.inter()),
+                          Text('Submitted: $formattedTimestamp', style: GoogleFonts.inter(color: Colors.grey)),
+                          Text('Started: $formattedTakenAt', style: GoogleFonts.inter(color: Colors.blue)),
+                          if (status == 'Solved') ...[
+                            Text('Resolved: $formattedResolvedAt', style: GoogleFonts.inter(color: Colors.green)),
                             if (data['resolutionComment'] != null)
                               Text('Details: ${data['resolutionComment']}', style: GoogleFonts.inter(color: Colors.green)),
-                            const SizedBox(height: 8),
-                            Row(
+                          ],
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 40,
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 if (data['imageUrl'] != null)
@@ -296,7 +291,7 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                                     icon: const Icon(Icons.audiotrack, color: Colors.blue),
                                     onPressed: () => _playAudio(data['audioUrl']),
                                   ),
-                                if (status == 'Unsolved')
+                                if (status == 'Unsolved' && (data['assignedTo'] == null || data['assignedTo'] == ''))
                                   IconButton(
                                     icon: const Icon(FontAwesomeIcons.handHolding, color: Colors.blue),
                                     onPressed: () => _takeCase(reports[index].id),
@@ -310,17 +305,17 @@ class _NGOReportsPageState extends State<NGOReportsPage> {
                                   ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ).animate().fadeIn(duration: 300.ms);
-                  },
-                );
-              },
-            ),
+                    ),
+                  ).animate().fadeIn(duration: 300.ms);
+                },
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
