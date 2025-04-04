@@ -16,8 +16,10 @@ class AdminDashboardPageState extends State<AdminDashboardPage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     const ReportManagementPage(),
-    const AnalyticsPage(),
+    const AnalyticsDashboard(),
+    const NGOAdminPanel(),
     const NGORegistriesPage(),
+    
   ];
 
   // Function to handle back button press and prompt for logout confirmation

@@ -5,9 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 
@@ -59,9 +57,32 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
   }
 
   void _updateReport(String docId, Map<String, dynamic> data) async {
-    String newStatus = data['status'] == 'Solved' ? 'Unsolved' : 'Solved';
-    await reportsCollection.doc(docId).update({'status': newStatus});
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
+    try {
+      String currentStatus = data['status'] ?? 'Unsolved';
+      String newStatus = currentStatus == 'Solved' ? 'Unsolved' : 'Solved';
+
+      if (newStatus == 'Solved') {
+        // When marking as Solved, add resolution details and timestamp
+        await reportsCollection.doc(docId).update({
+          'status': 'Solved',
+          'resolutionComment': 'Case resolved by NGO', // Static for now; could be dynamic via a form
+          'resolvedAt': FieldValue.serverTimestamp(), // Server timestamp
+        });
+      } 
+      else 
+      {
+        // When marking as Unsolved, reset by removing details and assignment
+        await reportsCollection.doc(docId).update({
+          'status': 'Unsolved',
+          'resolutionComment': FieldValue.delete(), // Remove rescue details
+          'resolvedAt': FieldValue.delete(), // Remove resolved timestamp
+          'assignedTo': null, // Clear assignment
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating report: $e')));
+    }
   }
 
   void _deleteReport(String docId) async {
@@ -161,9 +182,6 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
     }
   });
 }
-
-
-
 
   Future<void> _openInGoogleMaps(double? latitude, double? longitude) async {
     if (latitude != null && longitude != null) {
