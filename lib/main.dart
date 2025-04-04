@@ -1,13 +1,15 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'login.dart';
+import 'ngo_login.dart'; // New NGO login page
+import 'admin_login.dart'; // New Admin login page
 import 'report.dart';
 import 'google_drive_service.dart';
 import 'register.dart';
-import 'ngo_dashboard.dart'; // Import NGODashboardPage
-import 'admin_dashboard.dart'; // Import AdminDashboardPage
+import 'ngo_dashboard.dart';
+import 'admin_dashboard.dart';
 
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
@@ -29,8 +31,13 @@ class HomePageWidget extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Login'),
-              onTap: () => Navigator.pushNamed(context, '/login'),
+              title: const Text('NGO Login'),
+              onTap: () => Navigator.pushNamed(context, '/ngo_login'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.admin_panel_settings),
+              title: const Text('Admin Login'),
+              onTap: () => Navigator.pushNamed(context, '/admin_login'),
             ),
             ListTile(
               leading: const Icon(Icons.person_add),
@@ -73,7 +80,6 @@ class HomePageWidget extends StatelessWidget {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -95,7 +101,6 @@ void main() async {
     return;
   }
 
-  // Initialize Google Drive Service
   final driveService = GoogleDriveService();
   try {
     await driveService.authenticateWithGoogleDrive();
@@ -108,7 +113,8 @@ void main() async {
     initialRoute: '/',
     routes: {
       '/': (context) => const HomePageWidget(),
-      '/login': (context) => const LoginPage(),
+      '/ngo_login': (context) => const NGOLoginPage(),
+      '/admin_login': (context) => const AdminLoginPage(),
       '/register': (context) => const RegisterPageWidget(),
       '/report': (context) => const ReportPageWidget(),
       '/ngo_dashboard': (context) {
