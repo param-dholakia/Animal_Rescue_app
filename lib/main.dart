@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart'; // Added this import
 import 'firebase_options.dart';
-import 'ngo_login.dart'; // New NGO login page
-import 'admin_login.dart'; // New Admin login page
+import 'ngo_login.dart';
+import 'admin_login.dart';
 import 'report.dart';
 import 'google_drive_service.dart';
 import 'register.dart';
@@ -47,31 +48,67 @@ class HomePageWidget extends StatelessWidget {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "Report Here",
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            ),
-            const Text("(click below red button to report)"),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.all(20),
-                shape: const CircleBorder(),
-              ),
-              onPressed: () => Navigator.pushNamed(context, '/report'),
-              child: const Icon(
-                FontAwesomeIcons.paw,
-                color: Colors.white,
-                size: 30,
+      body: Stack(
+        children: [
+          // Background Image
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background.jpg'), // Replace with your image path
+                fit: BoxFit.cover,
               ),
             ),
-          ],
-        ),
+          ),
+          // Semi-transparent overlay for readability
+          Container(
+            color: Colors.black.withOpacity(0.4),
+          ),
+          // Main content
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Report Here",
+                  style: GoogleFonts.roboto(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 10.0,
+                        color: Colors.black.withOpacity(0.5),
+                        offset: const Offset(2.0, 2.0),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  "(click below red button to report)",
+                  style: GoogleFonts.roboto(
+                    fontSize: 16,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.all(20),
+                    shape: const CircleBorder(),
+                    elevation: 8.0,
+                  ),
+                  onPressed: () => Navigator.pushNamed(context, '/report'),
+                  child: const Icon(
+                    FontAwesomeIcons.paw,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
